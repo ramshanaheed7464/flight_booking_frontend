@@ -1,0 +1,599 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ── Page layout ── */
+.fl-root {
+    min-height: 100vh;
+    background: #08080c;
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-hero {
+    padding: 7rem 2.5rem 2rem;
+    background: linear-gradient(180deg, rgba(201, 163, 84, 0.06) 0%, transparent 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fl-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.3rem;
+}
+
+.fl-title em {
+    font-style: italic;
+    color: #c9a354;
+}
+
+.fl-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 300;
+    margin-bottom: 1.75rem;
+}
+
+/* ── Search panel ── */
+.fl-search-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+    margin-bottom: 1.25rem;
+}
+
+.fl-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.fl-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.fl-input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 150px;
+}
+
+.fl-input:focus {
+    border-color: rgba(201, 163, 84, 0.45);
+}
+
+.fl-input::placeholder {
+    color: rgba(255, 255, 255, 0.18);
+}
+
+.fl-select {
+    background: #0e0e14;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #fff;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 140px;
+}
+
+.fl-select:focus {
+    border-color: rgba(201, 163, 84, 0.45);
+}
+
+.fl-search-btn {
+    background: #c9a354;
+    color: #08080c;
+    border: none;
+    border-radius: 6px;
+    padding: 0.65rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+    align-self: flex-end;
+}
+
+.fl-search-btn:hover {
+    opacity: 0.85;
+}
+
+.fl-clear-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    align-self: flex-end;
+}
+
+.fl-clear-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Sort / count bar ── */
+.fl-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.fl-count {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.25);
+    letter-spacing: 0.05em;
+}
+
+.fl-sort-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fl-sort-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+/* ── Content ── */
+.fl-content {
+    flex: 1;
+    padding: 2rem 2.5rem;
+    max-width: 980px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.fl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.fl-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 0.9rem;
+}
+
+.fl-loading {
+    text-align: center;
+    padding: 4rem;
+    color: rgba(201, 163, 84, 0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.fl-error {
+    text-align: center;
+    padding: 3rem;
+    color: #e05f5f;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+}
+
+/* ── Flight card ── */
+.fc {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 1.4rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    transition: border-color 0.25s, background 0.25s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.fc::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #c9a354, transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.fc:hover {
+    border-color: rgba(201, 163, 84, 0.25);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+}
+
+.fc:hover::before {
+    opacity: 1;
+}
+
+.fc-route {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 220px;
+}
+
+.fc-city {
+    text-align: center;
+}
+
+.fc-code {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+}
+
+.fc-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+}
+
+.fc-mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.fc-line {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.fc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid #c9a354;
+    flex-shrink: 0;
+}
+
+.fc-dash {
+    flex: 1;
+    height: 1px;
+    background: rgba(201, 163, 84, 0.25);
+}
+
+.fc-plane {
+    color: #c9a354;
+    font-size: 0.9rem;
+}
+
+.fc-fn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.fc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 100px;
+}
+
+.fc-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.fc-lbl {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.fc-seats-low {
+    color: #e8a838 !important;
+}
+
+.fc-price-wrap {
+    text-align: right;
+    min-width: 85px;
+}
+
+.fc-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #c9a354;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.fc-price-lbl {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.2rem;
+}
+
+.fc-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid #c9a354;
+    color: #c9a354;
+    background: transparent;
+    padding: 0.5rem 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+
+.fc-btn:hover {
+    background: #c9a354;
+    color: #08080c;
+}
+
+.fc-no-seats {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    color: #e05f5f;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid rgba(224, 95, 95, 0.3);
+    border-radius: 5px;
+}
+
+/* ── Booking modal ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.modal {
+    background: #0e0e14;
+    border: 1px solid rgba(201, 163, 84, 0.2);
+    border-radius: 14px;
+    padding: 2.25rem;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.1rem;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #fff;
+}
+
+.modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.3rem;
+}
+
+.modal-title em {
+    font-style: italic;
+    color: #c9a354;
+}
+
+.modal-route {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 1.5rem;
+}
+
+.modal-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.modal-tab {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.modal-tab.active {
+    background: rgba(201, 163, 84, 0.1);
+    border-color: rgba(201, 163, 84, 0.4);
+    color: #c9a354;
+}
+
+.modal-field {
+    margin-bottom: 1rem;
+}
+
+.modal-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(255, 255, 255, 0.35);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.modal-select {
+    width: 100%;
+    background: #0a0a10;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.65rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    cursor: pointer;
+}
+
+.modal-select:focus {
+    border-color: rgba(201, 163, 84, 0.45);
+}
+
+.modal-summary {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1.25rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-total-lbl {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.modal-total-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin-top: 0.1rem;
+}
+
+.modal-total {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: #c9a354;
+    font-weight: 600;
+}
+
+.modal-btn {
+    width: 100%;
+    background: #c9a354;
+    color: #08080c;
+    border: none;
+    border-radius: 6px;
+    padding: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.modal-btn:hover:not(:disabled) {
+    opacity: 0.87;
+}
+
+.modal-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.modal-error {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    color: #e05f5f;
+    background: rgba(224, 95, 95, 0.08);
+    border: 1px solid rgba(224, 95, 95, 0.2);
+    border-radius: 5px;
+    padding: 0.55rem 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+.modal-success {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    color: #4caf88;
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(76, 175, 136, 0.08);
+    border: 1px solid rgba(76, 175, 136, 0.2);
+    border-radius: 6px;
+}

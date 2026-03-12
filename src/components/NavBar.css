@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+.nav-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(8, 8, 12, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 163, 84, 0.15);
+    padding: 0 2.5rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #c9a354;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-brand span {
+    color: #fff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nav-link {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.825rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link.active {
+    color: #c9a354;
+}
+
+.nav-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.825rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #08080c;
+    background: #c9a354;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-left: 0.5rem;
+}
+
+.nav-btn:hover {
+    opacity: 0.85;
+}
+
+.nav-user {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 0.75rem;
+}
