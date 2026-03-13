@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { Plane } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Auth.css';
@@ -38,7 +39,7 @@ export default function Register() {
             <div className="auth-bg" />
             <div className="auth-grid" />
             <div className="auth-card">
-                <div className="auth-logo">✦ <span>Aero</span>Link</div>
+                <div className="auth-logo"><Plane size={14} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle' }} /> <span>Aero</span>Link</div>
                 <h1 className="auth-title">Join <em>AeroLink.</em></h1>
                 <p className="auth-sub">Create your account and start booking flights today.</p>
                 <form onSubmit={handleSubmit}>

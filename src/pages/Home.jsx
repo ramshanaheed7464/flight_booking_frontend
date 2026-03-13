@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
+import { Plane } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import './Home.css';
 
@@ -10,7 +11,7 @@ export default function Home() {
         <div className="home-root">
             <div className="home-bg" />
             <div className="home-grid" />
-            <div className="home-eyebrow">✦ Premium Air Travel</div>
+            <div className="home-eyebrow"><Plane size={13} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle' }} /> Premium Air Travel</div>
             <h1 className="home-title">Fly with <em>refined</em><br />elegance.</h1>
             <p className="home-subtitle">
                 Browse curated flights, book with confidence, and experience travel redefined.
