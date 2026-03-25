@@ -2,35 +2,96 @@ import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Plane, ArrowRight, ArrowLeft, ArrowLeftRight, RotateCcw,
-    X, Check, Users, Calendar, Clock, Search, SlidersHorizontal,
-    User, BookOpen, Globe, Phone, Mail, Utensils,
-    ChevronRight, ChevronDown, AlertCircle, Loader2, ArrowUp, ArrowDown
+    X, Check, Users, Clock, Search, SlidersHorizontal,
+    User, BookOpen, Globe, Phone, Utensils,
+    ChevronRight, ChevronDown, AlertCircle, Loader2, ArrowUp, ArrowDown,
+    MapPin
 } from 'lucide-react';
 import { getFlights } from '../api/flightApi';
 import { createBooking } from '../api/bookingApi';
+import { getNationalities, getMealPreferences } from '../api/bookingOptionsApi';
+import { getCountries, getCitiesByCountryId } from '../api/LocationApi';
+import { validatePassenger, getPhonePlaceholder, DEFAULT_NATIONALITIES, DEFAULT_MEAL_PREFERENCES } from './validation';
 import { AuthContext } from '../context/AuthContext';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import './Flights.css';
 
-const NATIONALITIES = [
-    'Pakistani', 'Afghan', 'American', 'Australian', 'British', 'Canadian',
-    'Chinese', 'Dutch', 'Egyptian', 'French', 'German', 'Indian', 'Iranian',
-    'Italian', 'Japanese', 'Jordanian', 'Korean', 'Malaysian', 'Saudi Arabian',
-    'South African', 'Spanish', 'Turkish', 'Emirati', 'Other'
-];
+function LocationPicker({ label, countries, country, city, onCountryChange, onCityChange }) {
+    const [cities, setCities] = useState([]);
+    const [loadingCities, setLoadingCities] = useState(false);
 
-const MEAL_PREFERENCES = [
-    'Standard', 'Vegetarian', 'Vegan', 'Halal', 'Kosher',
-    'Gluten Free', 'Diabetic', 'Low Calorie', 'Child Meal'
-];
+    useEffect(() => {
+        if (!country) { setCities([]); return; }
+        setLoadingCities(true);
+        getCitiesByCountryId(country.id)
+            .then(res => setCities(res.data))
+            .catch(() => setCities([]))
+            .finally(() => setLoadingCities(false));
+    }, [country?.id]);
+
+    const handleCountryChange = (e) => {
+        const selected = countries.find(c => c.id === Number(e.target.value)) || null;
+        onCountryChange(selected);
+        onCityChange(null);
+    };
+
+    const handleCityChange = (e) => {
+        const selected = cities.find(c => c.id === Number(e.target.value)) || null;
+        onCityChange(selected);
+    };
+
+    return (
+        <div className="fl-location-picker">
+            <span className="fl-label">{label}</span>
+            <div className="fl-location-row">
+                <div className="fl-location-country-wrap">
+                    {country?.flag && <span className="fl-country-flag">{country.flag}</span>}
+                    <select
+                        className={`fl-select fl-country-select${country?.flag ? ' fl-select-flagged' : ''}`}
+                        value={country?.id || ''}
+                        onChange={handleCountryChange}
+                    >
+                        <option value="">Country</option>
+                        {countries.map(c => (
+                            <option key={c.id} value={c.id}>{c.flag} {c.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <span className="fl-location-sep"><ChevronRight size={12} /></span>
+
+                {country ? (
+                    <select
+                        className="fl-select fl-city-select"
+                        value={city?.id || ''}
+                        onChange={handleCityChange}
+                        disabled={loadingCities}
+                    >
+                        <option value="">{loadingCities ? 'Loading…' : 'All cities'}</option>
+                        {cities.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                    </select>
+                ) : (
+                    <input
+                        className="fl-input fl-city-input"
+                        placeholder="Any city"
+                        value={city?.name || ''}
+                        onChange={e => onCityChange(e.target.value ? { name: e.target.value } : null)}
+                    />
+                )}
+            </div>
+        </div>
+    );
+}
 
 const emptyPassenger = () => ({
     fullName: '', passportNumber: '', nationality: '',
-    dateOfBirth: '', gender: '', phone: '', email: '', mealPreference: ''
+    dateOfBirth: '', gender: '', phone: '', mealPreference: ''
 });
 
-function PassengerForm({ index, data, onChange, errors }) {
+function PassengerForm({ index, data, onChange, errors, nationalities, mealPreferences }) {
     const field = (key, label, type = 'text', opts = {}) => (
         <div className={`modal-field${opts.fullWidth ? ' modal-field-full' : ''}`}>
             <label className="modal-label">
@@ -44,7 +105,11 @@ function PassengerForm({ index, data, onChange, errors }) {
                     onChange={e => onChange(index, key, e.target.value)}
                 >
                     <option value="">Select…</option>
-                    {opts.options.map(o => <option key={o} value={o}>{o}</option>)}
+                    {opts.options.map(o => {
+                        const val = typeof o === 'object' ? o.name : o;
+                        const keyId = typeof o === 'object' ? (o.id ?? o.name) : o;
+                        return <option key={keyId} value={val}>{val}</option>;
+                    })}
                 </select>
             ) : (
                 <input
@@ -57,9 +122,7 @@ function PassengerForm({ index, data, onChange, errors }) {
                 />
             )}
             {errors?.[key] && (
-                <span className="modal-field-err">
-                    <AlertCircle size={11} /> {errors[key]}
-                </span>
+                <span className="modal-field-err"><AlertCircle size={11} /> {errors[key]}</span>
             )}
         </div>
     );
@@ -71,43 +134,34 @@ function PassengerForm({ index, data, onChange, errors }) {
                 <span className="modal-passenger-num">Passenger {index + 1}</span>
                 <span className="modal-passenger-sub">Travel &amp; identity information</span>
             </div>
-
-            <div className="modal-passenger-section-label">
-                <BookOpen size={10} /> Identity
-            </div>
+            <div className="modal-passenger-section-label"><BookOpen size={10} /> Identity</div>
             <div className="modal-passenger-grid">
                 {field('fullName', 'Full Name', 'text', { placeholder: 'As on passport', fullWidth: true, icon: <User size={11} /> })}
                 {field('passportNumber', 'Passport No.', 'text', { placeholder: 'e.g. AA1234567', icon: <BookOpen size={11} /> })}
-                {field('nationality', 'Nationality', 'select', { options: NATIONALITIES, icon: <Globe size={11} /> })}
-                {field('dateOfBirth', 'Date of Birth', 'date', { icon: <Calendar size={11} /> })}
+                {field('nationality', 'Nationality', 'select', { options: nationalities, icon: <Globe size={11} /> })}
+                {field('dateOfBirth', 'Date of Birth', 'date', { icon: <Users size={11} /> })}
                 {field('gender', 'Gender', 'select', { options: ['Male', 'Female', 'Other'], icon: <Users size={11} /> })}
             </div>
-
-            <div className="modal-passenger-section-label">
-                <Phone size={10} /> Contact
-            </div>
+            <div className="modal-passenger-section-label"><Phone size={10} /> Contact</div>
             <div className="modal-passenger-grid">
-                {field('phone', 'Phone Number', 'tel', { placeholder: '+92 300 0000000', icon: <Phone size={11} /> })}
-                {field('email', 'Email Address', 'email', { placeholder: 'passenger@email.com', icon: <Mail size={11} /> })}
+                {field('phone', 'Phone Number', 'tel', { placeholder: getPhonePlaceholder(data.nationality), icon: <Phone size={11} /> })}
             </div>
-
-            <div className="modal-passenger-section-label">
-                <Utensils size={10} /> Preferences
-            </div>
+            <div className="modal-passenger-section-label"><Utensils size={10} /> Preferences</div>
             <div className="modal-passenger-grid">
-                {field('mealPreference', 'Meal Preference', 'select', { options: MEAL_PREFERENCES, fullWidth: true, icon: <Utensils size={11} /> })}
+                {field('mealPreference', 'Meal Preference', 'select', { options: mealPreferences, fullWidth: true, icon: <Utensils size={11} /> })}
             </div>
         </div>
     );
 }
 
-function BookingModal({ flight, flights, onClose, onBooked }) {
+// ─── Booking modal ────────────────────────────────────────────────
+function BookingModal({ flight, flights, onClose, onBooked, nationalities, mealPreferences }) {
     const [step, setStep] = useState(1);
     const [tripType, setTripType] = useState('ONE_WAY');
     const [passengers, setPassengers] = useState(1);
     const [returnFlightId, setReturnFlightId] = useState('');
     const [passengerForms, setPassengerForms] = useState([emptyPassenger()]);
-    const [formErrors, setFormErrors] = useState([]);
+    const [formErrors, setFormErrors] = useState([{}]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -126,11 +180,8 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
 
     const handlePassengerCount = (n) => {
         setPassengers(n);
-        setPassengerForms(prev => {
-            const next = [...prev];
-            while (next.length < n) next.push(emptyPassenger());
-            return next.slice(0, n);
-        });
+        setPassengerForms(prev => { const a = [...prev]; while (a.length < n) a.push(emptyPassenger()); return a.slice(0, n); });
+        setFormErrors(prev => { const a = [...prev]; while (a.length < n) a.push({}); return a.slice(0, n); });
     };
 
     const handlePassengerChange = (idx, key, val) => {
@@ -139,37 +190,19 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
     };
 
     const validateStep1 = () => {
-        if (tripType === 'ROUND_TRIP' && !returnFlightId) {
-            setError('Please select a return flight.');
-            return false;
-        }
-        setError('');
-        return true;
+        if (tripType === 'ROUND_TRIP' && !returnFlightId) { setError('Please select a return flight.'); return false; }
+        setError(''); return true;
     };
 
     const validateStep2 = () => {
-        const errors = passengerForms.map(p => {
-            const e = {};
-            if (!p.fullName.trim()) e.fullName = 'Required';
-            if (!p.passportNumber.trim()) e.passportNumber = 'Required';
-            if (!p.nationality) e.nationality = 'Required';
-            if (!p.dateOfBirth) e.dateOfBirth = 'Required';
-            if (!p.gender) e.gender = 'Required';
-            if (!p.phone.trim()) e.phone = 'Required';
-            if (!p.email.trim()) e.email = 'Required';
-            if (!p.mealPreference) e.mealPreference = 'Required';
-            return e;
-        });
-        setFormErrors(errors);
-        return errors.every(e => Object.keys(e).length === 0);
+        const allErrors = passengerForms.map(p => validatePassenger(p).errors);
+        setFormErrors(allErrors);
+        return allErrors.every(e => Object.keys(e).length === 0);
     };
-
-    const handleNext = () => { if (validateStep1()) setStep(2); };
 
     const handleBook = async () => {
         if (!validateStep2()) return;
-        setLoading(true);
-        setError('');
+        setLoading(true); setError('');
         try {
             const body = { flightId: flight.id, tripType, passengers, passengerDetails: passengerForms };
             if (tripType === 'ROUND_TRIP') body.returnFlightId = Number(returnFlightId);
@@ -178,23 +211,16 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
             setTimeout(() => { onBooked(); onClose(); }, 1800);
         } catch (e) {
             setError(e.response?.data || 'Booking failed. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     };
 
     return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
             <div className="modal modal-wide">
-                <button className="modal-close" onClick={onClose}>
-                    <X size={16} />
-                </button>
-
+                <button className="modal-close" onClick={onClose}><X size={16} /></button>
                 <div className="modal-steps">
                     <div className={`modal-step ${step >= 1 ? 'active' : ''}`}>
-                        <div className="modal-step-dot">
-                            {step > 1 ? <Check size={12} /> : '1'}
-                        </div>
+                        <div className="modal-step-dot">{step > 1 ? <Check size={12} /> : '1'}</div>
                         <span>Trip Details</span>
                     </div>
                     <div className="modal-step-line" />
@@ -203,10 +229,7 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
                         <span>Passengers</span>
                     </div>
                 </div>
-
-                <div className="modal-title">
-                    {step === 1 ? <>Select <em>Trip</em></> : <>Passenger <em>Details</em></>}
-                </div>
+                <div className="modal-title">{step === 1 ? <>Select <em>Trip</em></> : <>Passenger <em>Details</em></>}</div>
                 <div className="modal-route">
                     <span>{flight.source}</span>
                     <ArrowRight size={12} style={{ display: 'inline', margin: '0 5px', verticalAlign: 'middle', opacity: 0.5 }} />
@@ -217,56 +240,36 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
                 {step === 1 && (
                     <>
                         <div className="modal-tabs">
-                            <div className={`modal-tab ${tripType === 'ONE_WAY' ? 'active' : ''}`} onClick={() => setTripType('ONE_WAY')}>
-                                <Plane size={13} /> One Way
-                            </div>
-                            <div className={`modal-tab ${tripType === 'ROUND_TRIP' ? 'active' : ''}`} onClick={() => setTripType('ROUND_TRIP')}>
-                                <ArrowLeftRight size={13} /> Round Trip
-                            </div>
+                            <div className={`modal-tab ${tripType === 'ONE_WAY' ? 'active' : ''}`} onClick={() => setTripType('ONE_WAY')}><Plane size={13} /> One Way</div>
+                            <div className={`modal-tab ${tripType === 'ROUND_TRIP' ? 'active' : ''}`} onClick={() => setTripType('ROUND_TRIP')}><ArrowLeftRight size={13} /> Round Trip</div>
                         </div>
-
                         <div className="modal-field">
-                            <label className="modal-label">
-                                <span className="modal-label-icon"><Users size={11} /></span> Passengers
-                            </label>
+                            <label className="modal-label"><span className="modal-label-icon"><Users size={11} /></span> Passengers</label>
                             <select className="modal-select" value={passengers} onChange={e => handlePassengerCount(Number(e.target.value))}>
-                                {[1, 2, 3, 4, 5, 6].map(n => (
-                                    <option key={n} value={n} disabled={n > flight.seatsAvailable}>
-                                        {n} Passenger{n > 1 ? 's' : ''}
-                                    </option>
-                                ))}
+                                {[1, 2, 3, 4, 5, 6].map(n => <option key={n} value={n} disabled={n > flight.seatsAvailable}>{n} Passenger{n > 1 ? 's' : ''}</option>)}
                             </select>
                         </div>
-
                         {tripType === 'ROUND_TRIP' && (
                             <div className="modal-field">
-                                <label className="modal-label">
-                                    <span className="modal-label-icon"><RotateCcw size={11} /></span> Return Flight
-                                </label>
+                                <label className="modal-label"><span className="modal-label-icon"><RotateCcw size={11} /></span> Return Flight</label>
                                 <select className="modal-select" value={returnFlightId} onChange={e => setReturnFlightId(e.target.value)}>
                                     <option value="">Select return flight…</option>
                                     {returnOptions.length === 0
                                         ? <option disabled>No return flights available</option>
-                                        : returnOptions.map(f => (
-                                            <option key={f.id} value={f.id}>
-                                                {f.source} → {f.destination} · {f.flightNumber} · PKR {f.price}
-                                            </option>
-                                        ))
+                                        : returnOptions.map(f => <option key={f.id} value={f.id}>{f.source} → {f.destination} · {f.flightNumber} · PKR {f.price}</option>)
                                     }
                                 </select>
                             </div>
                         )}
-
                         <div className="modal-summary">
                             <div>
                                 <div className="modal-total-lbl">Total</div>
                                 <div className="modal-total-sub">{passengers} pax · {tripType === 'ROUND_TRIP' ? 'return included' : 'one way'}</div>
                             </div>
-                            <div className="modal-total">PKR {total}</div>
+                            <div className="modal-total">PKR {total.toLocaleString()}</div>
                         </div>
-
                         {error && <div className="modal-error"><AlertCircle size={14} /> {error}</div>}
-                        <button className="modal-btn" onClick={handleNext}>
+                        <button className="modal-btn" onClick={() => { if (validateStep1()) setStep(2); }}>
                             Continue <ChevronRight size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> Passenger Details
                         </button>
                     </>
@@ -276,26 +279,25 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
                     <>
                         <div className="modal-passengers-scroll">
                             {passengerForms.map((p, i) => (
-                                <PassengerForm key={i} index={i} data={p} onChange={handlePassengerChange} errors={formErrors[i]} />
+                                <PassengerForm key={i} index={i} data={p}
+                                    onChange={handlePassengerChange} errors={formErrors[i]}
+                                    nationalities={nationalities} mealPreferences={mealPreferences}
+                                />
                             ))}
                         </div>
-
                         <div className="modal-summary">
                             <div>
                                 <div className="modal-total-lbl">Total</div>
                                 <div className="modal-total-sub">{passengers} pax · {tripType === 'ROUND_TRIP' ? 'return included' : 'one way'}</div>
                             </div>
-                            <div className="modal-total">PKR {total}</div>
+                            <div className="modal-total">PKR {total.toLocaleString()}</div>
                         </div>
-
                         {error && <div className="modal-error"><AlertCircle size={14} /> {error}</div>}
                         {success ? (
                             <div className="modal-success"><Check size={15} /> Booking confirmed!</div>
                         ) : (
                             <div className="modal-btn-row">
-                                <button className="modal-btn-back" onClick={() => { setStep(1); setError(''); }}>
-                                    <ArrowLeft size={14} /> Back
-                                </button>
+                                <button className="modal-btn-back" onClick={() => { setStep(1); setError(''); }}><ArrowLeft size={14} /> Back</button>
                                 <button className="modal-btn modal-btn-flex" onClick={handleBook} disabled={loading}>
                                     {loading ? <><Loader2 size={14} className="spin" /> Confirming…</> : 'Confirm Booking'}
                                 </button>
@@ -308,7 +310,8 @@ function BookingModal({ flight, flights, onClose, onBooked }) {
     );
 }
 
-function FlightCard({ flight, allFlights, onBooked }) {
+// ─── Flight card ──────────────────────────────────────────────────
+function FlightCard({ flight, allFlights, onBooked, nationalities, mealPreferences }) {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
@@ -320,22 +323,12 @@ function FlightCard({ flight, allFlights, onBooked }) {
         <>
             <div className="fc">
                 <div className="fc-route">
-                    <div className="fc-city">
-                        <div className="fc-code">{flight.source}</div>
-                        <div className="fc-name">Origin</div>
-                    </div>
+                    <div className="fc-city"><div className="fc-code">{flight.source}</div><div className="fc-name">Origin</div></div>
                     <div className="fc-mid">
-                        <div className="fc-line">
-                            <div className="fc-dot" /><div className="fc-dash" />
-                            <Plane size={14} className="fc-plane-icon" />
-                            <div className="fc-dash" /><div className="fc-dot" />
-                        </div>
+                        <div className="fc-line"><div className="fc-dot" /><div className="fc-dash" /><Plane size={14} className="fc-plane-icon" /><div className="fc-dash" /><div className="fc-dot" /></div>
                         <div className="fc-fn">{flight.flightNumber}</div>
                     </div>
-                    <div className="fc-city">
-                        <div className="fc-code">{flight.destination}</div>
-                        <div className="fc-name">Destination</div>
-                    </div>
+                    <div className="fc-city"><div className="fc-code">{flight.destination}</div><div className="fc-name">Destination</div></div>
                 </div>
                 <div className="fc-meta">
                     <div>
@@ -354,7 +347,7 @@ function FlightCard({ flight, allFlights, onBooked }) {
                     </div>
                 </div>
                 <div className="fc-price-wrap">
-                    <div className="fc-price">PKR {flight.price ?? '—'}</div>
+                    <div className="fc-price">PKR {(flight.price ?? 0).toLocaleString()}</div>
                     <div className="fc-price-lbl">per seat</div>
                 </div>
                 {flight.seatsAvailable === 0
@@ -365,52 +358,45 @@ function FlightCard({ flight, allFlights, onBooked }) {
                 }
             </div>
             {showModal && (
-                <BookingModal flight={flight} flights={allFlights} onClose={() => setShowModal(false)} onBooked={onBooked} />
+                <BookingModal flight={flight} flights={allFlights}
+                    onClose={() => setShowModal(false)} onBooked={onBooked}
+                    nationalities={nationalities} mealPreferences={mealPreferences}
+                />
             )}
         </>
     );
 }
 
+// ─── Sort dropdown ────────────────────────────────────────────────
 const SORT_OPTIONS = [
-    { value: 'departure', label: 'Departure', icon: 'Calendar' },
-    { value: 'price', label: 'Price Low', icon: 'ArrowUp' },
-    { value: 'price-desc', label: 'Price High', icon: 'ArrowDown' },
-    { value: 'seats', label: 'Most Seats', icon: 'Users' },
+    { value: 'departure', label: 'Departure', Icon: Clock },
+    { value: 'price', label: 'Price Low', Icon: ArrowUp },
+    { value: 'price-desc', label: 'Price High', Icon: ArrowDown },
+    { value: 'seats', label: 'Most Seats', Icon: Users },
 ];
 
 function SortDropdown({ value, onChange }) {
     const [open, setOpen] = useState(false);
     const current = SORT_OPTIONS.find(o => o.value === value);
-    const icons = { Calendar, ArrowUp, ArrowDown, Users };
-    const IconEl = icons[current.icon];
     return (
         <div style={{ position: 'relative' }}>
-            <button
-                className="fl-sort-btn"
-                onClick={() => setOpen(o => !o)}
-            >
-                <IconEl size={12} />
-                {current.label}
+            <button className="fl-sort-btn" onClick={() => setOpen(o => !o)}>
+                <current.Icon size={12} /> {current.label}
                 <ChevronDown size={12} style={{ opacity: 0.5, marginLeft: 2 }} />
             </button>
             {open && (
                 <>
                     <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setOpen(false)} />
                     <div className="fl-sort-menu">
-                        {SORT_OPTIONS.map(opt => {
-                            const Icon = icons[opt.icon];
-                            return (
-                                <button
-                                    key={opt.value}
-                                    className={`fl-sort-option ${value === opt.value ? 'active' : ''}`}
-                                    onClick={() => { onChange(opt.value); setOpen(false); }}
-                                >
-                                    <Icon size={12} />
-                                    {opt.label}
-                                    {value === opt.value && <Check size={11} style={{ marginLeft: 'auto' }} />}
-                                </button>
-                            );
-                        })}
+                        {SORT_OPTIONS.map(opt => (
+                            <button key={opt.value}
+                                className={`fl-sort-option ${value === opt.value ? 'active' : ''}`}
+                                onClick={() => { onChange(opt.value); setOpen(false); }}
+                            >
+                                <opt.Icon size={12} /> {opt.label}
+                                {value === opt.value && <Check size={11} style={{ marginLeft: 'auto' }} />}
+                            </button>
+                        ))}
                     </div>
                 </>
             )}
@@ -418,15 +404,25 @@ function SortDropdown({ value, onChange }) {
     );
 }
 
+// ─── Main ─────────────────────────────────────────────────────────
 export default function Flights() {
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
-    const [date, setDate] = useState('');
     const [sortBy, setSortBy] = useState('departure');
-    const [applied, setApplied] = useState({ from: '', to: '', date: '' });
+    const [nationalities, setNationalities] = useState(DEFAULT_NATIONALITIES);
+    const [mealPreferences, setMealPreferences] = useState(DEFAULT_MEAL_PREFERENCES);
+    const [countries, setCountries] = useState([]);
+
+    // Uncommitted search state
+    const [fromCountry, setFromCountry] = useState(null);
+    const [fromCity, setFromCity] = useState(null);
+    const [toCountry, setToCountry] = useState(null);
+    const [toCity, setToCity] = useState(null);
+    const [date, setDate] = useState('');
+
+    // Committed (applied on Search click)
+    const [applied, setApplied] = useState({ fromCity: '', toCity: '', date: '' });
 
     const load = () => {
         setLoading(true);
@@ -435,15 +431,37 @@ export default function Flights() {
             .catch(() => setError('Failed to load flights.'))
             .finally(() => setLoading(false));
     };
-    useEffect(() => { load(); }, []);
 
-    const handleSearch = () => setApplied({ from, to, date });
-    const handleClear = () => { setFrom(''); setTo(''); setDate(''); setApplied({ from: '', to: '', date: '' }); };
+    useEffect(() => {
+        load();
+        getCountries().then(res => setCountries(res.data)).catch(() => { });
+        getNationalities().then(res => { if (res.data?.length) setNationalities(res.data); }).catch(() => { });
+        getMealPreferences().then(res => { if (res.data?.length) setMealPreferences(res.data); }).catch(() => { });
+    }, []);
+
+    const hasFilters = fromCountry || fromCity || toCountry || toCity || date;
+
+    const handleSearch = () =>
+        setApplied({ fromCity: fromCity?.name || '', toCity: toCity?.name || '', date });
+
+    const handleClear = () => {
+        setFromCountry(null); setFromCity(null);
+        setToCountry(null); setToCity(null);
+        setDate('');
+        setApplied({ fromCity: '', toCity: '', date: '' });
+    };
+
+    const handleSwap = () => {
+        const [fc, tc] = [fromCountry, toCountry];
+        const [fci, tci] = [fromCity, toCity];
+        setFromCountry(tc); setFromCity(tci);
+        setToCountry(fc); setToCity(fci);
+    };
 
     const filtered = flights
         .filter(f => {
-            if (applied.from && !f.source?.toLowerCase().includes(applied.from.toLowerCase())) return false;
-            if (applied.to && !f.destination?.toLowerCase().includes(applied.to.toLowerCase())) return false;
+            if (applied.fromCity && !f.source?.toLowerCase().includes(applied.fromCity.toLowerCase())) return false;
+            if (applied.toCity && !f.destination?.toLowerCase().includes(applied.toCity.toLowerCase())) return false;
             if (applied.date) {
                 const dep = f.departureTime ? new Date(f.departureTime).toISOString().slice(0, 10) : '';
                 if (dep !== applied.date) return false;
@@ -463,29 +481,45 @@ export default function Flights() {
             <div className="fl-root">
                 <div className="fl-hero">
                     <h1 className="fl-title">Find your <em>Flight</em></h1>
-                    <p className="fl-sub">Search, filter and book available routes instantly.</p>
+                    <p className="fl-sub">Select your country and city, then search available routes instantly.</p>
+
                     <div className="fl-search-panel">
-                        <div className="fl-field">
-                            <span className="fl-label">From</span>
-                            <input className="fl-input" placeholder="e.g. Karachi" value={from} onChange={e => setFrom(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} />
-                        </div>
-                        <div className="fl-field">
-                            <span className="fl-label">To</span>
-                            <input className="fl-input" placeholder="e.g. Lahore" value={to} onChange={e => setTo(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} />
-                        </div>
+                        <LocationPicker label="From" countries={countries}
+                            country={fromCountry} city={fromCity}
+                            onCountryChange={setFromCountry} onCityChange={setFromCity}
+                        />
+
+                        <button className="fl-swap-btn" title="Swap" onClick={handleSwap}>
+                            <ArrowLeftRight size={14} />
+                        </button>
+
+                        <LocationPicker label="To" countries={countries}
+                            country={toCountry} city={toCity}
+                            onCountryChange={setToCountry} onCityChange={setToCity}
+                        />
+
                         <div className="fl-field">
                             <span className="fl-label">Date</span>
-                            <input className="fl-input" type="date" value={date} onChange={e => setDate(e.target.value)} style={{ colorScheme: 'dark' }} />
+                            <input className="fl-input fl-date-input" type="date" value={date}
+                                onChange={e => setDate(e.target.value)} style={{ colorScheme: 'dark' }}
+                            />
                         </div>
-                        <button className="fl-search-btn" onClick={handleSearch}>
-                            <Search size={14} /> Search
-                        </button>
-                        {(from || to || date) && (
-                            <button className="fl-clear-btn" onClick={handleClear}>
-                                <X size={14} /> Clear
-                            </button>
-                        )}
+
+                        <div className="fl-search-actions">
+                            <button className="fl-search-btn" onClick={handleSearch}><Search size={14} /> Search</button>
+                            {hasFilters && (
+                                <button className="fl-clear-btn" onClick={handleClear}><X size={14} /> Clear</button>
+                            )}
+                        </div>
                     </div>
+
+                    {(applied.fromCity || applied.toCity || applied.date) && (
+                        <div className="fl-active-filters">
+                            {applied.fromCity && <span className="fl-filter-chip"><MapPin size={10} /> From: {applied.fromCity}</span>}
+                            {applied.toCity && <span className="fl-filter-chip"><MapPin size={10} /> To: {applied.toCity}</span>}
+                            {applied.date && <span className="fl-filter-chip"><Clock size={10} /> {new Date(applied.date + 'T00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
+                        </div>
+                    )}
                 </div>
 
                 <div className="fl-content">
@@ -503,8 +537,12 @@ export default function Flights() {
                             </div>
                             <div className="fl-list">
                                 {filtered.length === 0
-                                    ? <div className="fl-empty">No flights found. Try different cities or clear filters.</div>
-                                    : filtered.map(f => <FlightCard key={f.id} flight={f} allFlights={flights} onBooked={load} />)
+                                    ? <div className="fl-empty">No flights match your search. Try different cities or clear filters.</div>
+                                    : filtered.map(f =>
+                                        <FlightCard key={f.id} flight={f} allFlights={flights}
+                                            onBooked={load} nationalities={nationalities} mealPreferences={mealPreferences}
+                                        />
+                                    )
                                 }
                             </div>
                         </>

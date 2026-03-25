@@ -1,15 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap');
+@import '../styles/palette.css';
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-/* ── Page root ── */
 .pf-root {
     min-height: 100vh;
-    background: #08080c;
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
 }
@@ -18,7 +11,7 @@
 .pf-hero {
     padding: 7rem 2.5rem 2.5rem;
     background: linear-gradient(180deg, rgba(201, 163, 84, 0.06) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border-subtle);
     display: flex;
     align-items: center;
     gap: 1.75rem;
@@ -28,8 +21,8 @@
 .pf-avatar {
     width: 72px;
     height: 72px;
-    border-radius: 50%;
-    background: rgba(201, 163, 84, 0.1);
+    border-radius: var(--radius-full);
+    background: var(--color-gold-faint);
     border: 1px solid rgba(201, 163, 84, 0.25);
     display: flex;
     align-items: center;
@@ -38,10 +31,10 @@
 }
 
 .pf-avatar-initials {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
-    color: #c9a354;
+    color: var(--color-gold);
     line-height: 1;
 }
 
@@ -50,17 +43,17 @@
 }
 
 .pf-hero-name {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.9rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     line-height: 1.1;
 }
 
 .pf-hero-email {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
     margin-top: 0.35rem;
 }
 
@@ -68,52 +61,52 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 0.22rem 0.65rem;
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
     border: 1px solid;
-    margin-top: 0.6rem;
+    margin-top: var(--space-2);
 }
 
 /* ── Content area ── */
 .pf-content {
     flex: 1;
     padding: 2.5rem;
-    max-width: 780px;
+    max-width: var(--max-narrow);
     width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--space-6);
 }
 
 /* ── Card ── */
 .pf-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 12px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
     overflow: hidden;
 }
 
 .pf-card-header {
-    padding: 1.25rem 1.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: var(--space-5) 1.75rem;
+    border-bottom: 1px solid var(--color-border-dim);
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: var(--space-2);
 }
 
 .pf-card-title {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--color-text-faint);
 }
 
 .pf-card-body {
@@ -123,14 +116,14 @@
 /* ── Form elements ── */
 .pf-form-row {
     display: flex;
-    gap: 1rem;
+    gap: var(--space-4);
     flex-wrap: wrap;
 }
 
 .pf-field {
     flex: 1;
     min-width: 200px;
-    margin-bottom: 1.1rem;
+    margin-bottom: var(--space-5);
 }
 
 .pf-field:last-child {
@@ -138,36 +131,36 @@
 }
 
 .pf-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
     display: block;
     margin-bottom: 0.45rem;
 }
 
 .pf-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
     padding: 0.7rem 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    color: #fff;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text);
     outline: none;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color var(--transition-base), background var(--transition-base);
 }
 
 .pf-input:focus {
-    border-color: rgba(201, 163, 84, 0.5);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--color-border-focus);
+    background: var(--color-bg-input-focus);
 }
 
 .pf-input::placeholder {
-    color: rgba(255, 255, 255, 0.16);
+    color: var(--color-text-placeholder);
 }
 
 .pf-input:disabled {
@@ -176,17 +169,16 @@
 }
 
 .pf-input-hint {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-ghost);
     margin-top: 0.35rem;
 }
 
-/* ── Divider ── */
 .pf-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-    margin: 1.5rem 0;
+    background: var(--color-border-dim);
+    margin: var(--space-6) 0;
 }
 
 /* ── Save button ── */
@@ -194,19 +186,19 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    background: #c9a354;
-    color: #08080c;
+    background: var(--color-gold);
+    color: var(--color-bg);
     border: none;
     padding: 0.72rem 1.6rem;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: opacity 0.2s;
-    margin-top: 1.25rem;
+    transition: opacity var(--transition-base);
+    margin-top: var(--space-5);
 }
 
 .pf-save-btn:hover:not(:disabled) {
@@ -222,29 +214,29 @@
 .pf-success {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-family: 'DM Sans', sans-serif;
+    gap: var(--space-2);
+    font-family: var(--font-body);
     font-size: 0.8rem;
-    color: #4caf88;
-    background: rgba(76, 175, 136, 0.08);
-    border: 1px solid rgba(76, 175, 136, 0.2);
-    border-radius: 6px;
+    color: var(--color-success);
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    border-radius: var(--radius-md);
     padding: 0.65rem 0.9rem;
-    margin-top: 1rem;
+    margin-top: var(--space-4);
 }
 
 .pf-error {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-family: 'DM Sans', sans-serif;
+    gap: var(--space-2);
+    font-family: var(--font-body);
     font-size: 0.8rem;
-    color: #e05f5f;
-    background: rgba(224, 95, 95, 0.08);
-    border: 1px solid rgba(224, 95, 95, 0.2);
-    border-radius: 6px;
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-md);
     padding: 0.65rem 0.9rem;
-    margin-top: 1rem;
+    margin-top: var(--space-4);
 }
 
 /* ── Read-only info rows ── */
@@ -253,7 +245,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.85rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .pf-info-row:last-child {
@@ -262,25 +254,25 @@
 }
 
 .pf-info-key {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.28);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-label);
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
 .pf-info-val {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--color-text-muted);
 }
 
 /* ── Loading ── */
 .pf-loading {
     text-align: center;
-    padding: 4rem;
+    padding: var(--space-16);
     color: rgba(201, 163, 84, 0.6);
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;

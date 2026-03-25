@@ -1,0 +1,104 @@
+/* ============================================================
+   AEROLINK — Design Palette
+   Single source of truth for all colors, fonts, radii, spacing.
+   Import this file first in every CSS file that needs tokens.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap');
+
+:root {
+    /* ── Brand colors ── */
+    --color-gold: #c9a354;
+    --color-gold-dim: rgba(201, 163, 84, 0.4);
+    --color-gold-faint: rgba(201, 163, 84, 0.1);
+    --color-gold-ghost: rgba(201, 163, 84, 0.05);
+
+    /* ── Base backgrounds ── */
+    --color-bg: #08080c;
+    --color-bg-card: rgba(255, 255, 255, 0.03);
+    --color-bg-card-hover: rgba(255, 255, 255, 0.05);
+    --color-bg-input: rgba(255, 255, 255, 0.04);
+    --color-bg-input-focus: rgba(255, 255, 255, 0.06);
+
+    /* ── Border colors ── */
+    --color-border: rgba(255, 255, 255, 0.07);
+    --color-border-hover: rgba(201, 163, 84, 0.25);
+    --color-border-gold: rgba(201, 163, 84, 0.15);
+    --color-border-input: rgba(255, 255, 255, 0.10);
+    --color-border-focus: rgba(201, 163, 84, 0.50);
+    --color-border-subtle: rgba(255, 255, 255, 0.05);
+    --color-border-dim: rgba(255, 255, 255, 0.06);
+
+    /* ── Text colors ── */
+    --color-text: #ffffff;
+    --color-text-muted: rgba(255, 255, 255, 0.50);
+    --color-text-dim: rgba(255, 255, 255, 0.35);
+    --color-text-faint: rgba(255, 255, 255, 0.25);
+    --color-text-ghost: rgba(255, 255, 255, 0.20);
+    --color-text-label: rgba(255, 255, 255, 0.28);
+    --color-text-placeholder: rgba(255, 255, 255, 0.18);
+
+    /* ── Semantic colors ── */
+    --color-success: #4caf88;
+    --color-success-strong: #3fa870;
+    --color-success-bg: rgba(76, 175, 136, 0.08);
+    --color-success-border: rgba(76, 175, 136, 0.20);
+
+    --color-danger: #e05f5f;
+    --color-danger-bg: rgba(224, 95, 95, 0.08);
+    --color-danger-border: rgba(224, 95, 95, 0.20);
+    --color-danger-input-border: rgba(224, 95, 95, 0.55);
+    --color-danger-input-bg: rgba(224, 95, 95, 0.04);
+
+    --color-warning: #c9a354;
+    /* reuses gold */
+    --color-warning-muted: #e8a838;
+
+    /* ── Navbar ── */
+    --color-nav-bg: rgba(8, 8, 12, 0.92);
+
+    /* ── Typography ── */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+
+    /* ── Font sizes ── */
+    --text-xs: 0.65rem;
+    --text-sm: 0.75rem;
+    --text-base: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.35rem;
+    --text-xl: 1.75rem;
+    --text-2xl: 2rem;
+    --text-hero: clamp(2.8rem, 6vw, 5rem);
+
+    /* ── Spacing ── */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* ── Radii ── */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
+    --radius-pill: 20px;
+    --radius-full: 50%;
+
+    /* ── Transitions ── */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.20s ease;
+    --transition-medium: 0.25s ease;
+
+    /* ── Layout ── */
+    --nav-height: 64px;
+    --max-content: 1100px;
+    --max-narrow: 780px;
+}

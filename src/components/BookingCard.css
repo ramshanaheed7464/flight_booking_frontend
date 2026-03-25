@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap');
+@import '../styles/palette.css';
 
 .bc {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color var(--transition-base), transform var(--transition-base);
 }
 
 .bc:hover {
@@ -14,36 +14,36 @@
 }
 
 .bc-header {
-    background: rgba(201, 163, 84, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1rem 1.5rem;
+    background: var(--color-gold-ghost);
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: var(--space-4) var(--space-6);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .bc-id {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-faint);
 }
 
 .bc-status {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 0.2rem 0.6rem;
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
     border: 1px solid;
 }
 
 .bc-body {
-    padding: 1.5rem;
+    padding: var(--space-6);
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: var(--space-6);
 }
 
 .bc-route {
@@ -54,16 +54,16 @@
 }
 
 .bc-code {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.6rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
 }
 
 .bc-city-name {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-faint);
     text-transform: uppercase;
     letter-spacing: 0.07em;
 }
@@ -81,11 +81,6 @@
     background: rgba(201, 163, 84, 0.2);
 }
 
-.bc-plane {
-    color: #c9a354;
-    font-size: 0.85rem;
-}
-
 .bc-detail {
     display: flex;
     flex-direction: column;
@@ -93,23 +88,23 @@
 }
 
 .bc-detail-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-ghost);
 }
 
 .bc-detail-val {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
 }
 
 .bc-price {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.3rem;
-    color: #c9a354;
+    color: var(--color-gold);
     font-weight: 600;
     text-align: right;
 }

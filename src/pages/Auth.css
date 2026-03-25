@@ -1,20 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+@import '../styles/palette.css';
 
 .auth-root {
     min-height: 100vh;
-    background: #08080c;
+    background: var(--color-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: var(--space-8);
     position: relative;
     overflow: hidden;
 }
@@ -30,54 +22,55 @@
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(201, 163, 84, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201, 163, 84, 0.03) 1px, transparent 1px);
+        linear-gradient(var(--color-gold-ghost) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-gold-ghost) 1px, transparent 1px);
     background-size: 50px 50px;
     pointer-events: none;
 }
 
+/* Auth card — uses .auth-shell from components.css */
 .auth-card {
     position: relative;
     width: 100%;
     max-width: 420px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: 14px;
     padding: 2.75rem;
     backdrop-filter: blur(10px);
 }
 
 .auth-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    color: #c9a354;
-    margin-bottom: 2rem;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-gold);
+    margin-bottom: var(--space-8);
     letter-spacing: 0.02em;
 }
 
 .auth-logo span {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .auth-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.75rem;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     margin-bottom: 0.4rem;
 }
 
 .auth-title em {
     font-style: italic;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .auth-sub {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
     font-weight: 300;
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-8);
 }
 
 .auth-row {
@@ -86,69 +79,69 @@
 }
 
 .auth-field {
-    margin-bottom: 1.1rem;
+    margin-bottom: var(--space-5);
     flex: 1;
 }
 
 .auth-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--color-text-dim);
     display: block;
     margin-bottom: 0.45rem;
 }
 
 .auth-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
     padding: 0.7rem 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    color: #fff;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-base);
 }
 
 .auth-input:focus {
-    border-color: rgba(201, 163, 84, 0.5);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--color-border-focus);
+    background: var(--color-bg-input-focus);
 }
 
 .auth-input::placeholder {
-    color: rgba(255, 255, 255, 0.18);
+    color: var(--color-text-placeholder);
 }
 
 .auth-error {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
-    color: #e05f5f;
-    background: rgba(224, 95, 95, 0.08);
-    border: 1px solid rgba(224, 95, 95, 0.2);
-    border-radius: 5px;
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-sm);
     padding: 0.6rem 0.85rem;
-    margin-bottom: 1.1rem;
+    margin-bottom: var(--space-5);
 }
 
 .auth-btn {
     width: 100%;
-    background: #c9a354;
-    color: #08080c;
+    background: var(--color-gold);
+    color: var(--color-bg);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 0.8rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    margin-top: 0.5rem;
-    transition: opacity 0.2s;
+    margin-top: var(--space-2);
+    transition: opacity var(--transition-base);
 }
 
 .auth-btn:hover:not(:disabled) {
@@ -161,15 +154,15 @@
 }
 
 .auth-footer {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-faint);
     text-align: center;
-    margin-top: 1.5rem;
+    margin-top: var(--space-6);
 }
 
 .auth-footer a {
-    color: #c9a354;
+    color: var(--color-gold);
     text-decoration: none;
 }
 
@@ -179,6 +172,53 @@
 
 .auth-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-    margin: 1.5rem 0;
+    background: var(--color-border-dim);
+    margin: var(--space-6) 0;
+}
+
+/* ── Field-level error text ── */
+.auth-input-err {
+    border-color: var(--color-danger-input-border) !important;
+    background: var(--color-danger-input-bg) !important;
+}
+
+.auth-field-err {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: var(--color-danger);
+    margin-top: 0.3rem;
+}
+
+/* ── Password strength bar ── */
+.auth-strength {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: -0.25rem;
+    margin-bottom: var(--space-4);
+}
+
+.auth-strength-bar {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+}
+
+.auth-strength-seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--color-border-input);
+    transition: background 0.25s, opacity 0.25s;
+}
+
+.auth-strength-label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    min-width: 52px;
+    text-align: right;
+    transition: color 0.25s;
 }

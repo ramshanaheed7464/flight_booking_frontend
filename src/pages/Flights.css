@@ -1,15 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap');
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+@import '../styles/palette.css';
 
 /* ── Page layout ── */
 .fl-root {
     min-height: 100vh;
-    background: #08080c;
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
 }
@@ -17,108 +11,240 @@
 .fl-hero {
     padding: 7rem 2.5rem 2rem;
     background: linear-gradient(180deg, rgba(201, 163, 84, 0.06) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .fl-title {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     margin-bottom: 0.3rem;
 }
 
 .fl-title em {
     font-style: italic;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .fl-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.3);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-dim);
     font-weight: 300;
     margin-bottom: 1.75rem;
 }
 
-/* ── Search panel ── */
+/* ══════════════════════════════════════════════════════════════════
+   SEARCH PANEL — new layout
+   ══════════════════════════════════════════════════════════════════ */
+
 .fl-search-panel {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.6rem;
     align-items: flex-end;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--space-4);
 }
 
+/* ── Location picker block ── */
+.fl-location-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 260px;
+}
+
+.fl-location-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color var(--transition-base);
+}
+
+.fl-location-row:focus-within {
+    border-color: var(--color-border-focus);
+}
+
+/* Country select wrapper (flag + select) */
+.fl-location-country-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-border-input);
+}
+
+.fl-country-flag {
+    position: absolute;
+    left: 0.6rem;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+}
+
+/* Shared select style (no outer border — parent handles it) */
+.fl-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--color-text);
+    cursor: pointer;
+    padding: 0.62rem 1.6rem 0.62rem 0.75rem;
+    /* Custom arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.45rem center;
+}
+
+.fl-select option {
+    background: #0e0e14;
+    color: #fff;
+}
+
+.fl-country-select {
+    min-width: 130px;
+    max-width: 155px;
+    padding-left: 0.75rem;
+    /* no flag padding by default */
+}
+
+/* When a country is selected, shift text right for flag */
+.fl-location-country-wrap .fl-country-flag+.fl-country-select {
+    padding-left: 2rem;
+}
+
+.fl-city-select {
+    flex: 1;
+    min-width: 110px;
+}
+
+/* Separator between country and city */
+.fl-location-sep {
+    color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    padding: 0 0.1rem;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+/* City text input (when no country selected) */
+.fl-city-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--color-text);
+    padding: 0.62rem 0.75rem;
+    min-width: 100px;
+}
+
+.fl-city-input::placeholder {
+    color: var(--color-text-placeholder);
+}
+
+/* ── Swap button ── */
+.fl-swap-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-dim);
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: flex-end;
+    margin-bottom: 2px;
+    transition: border-color var(--transition-base), color var(--transition-base), background var(--transition-base);
+}
+
+.fl-swap-btn:hover {
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
+    background: var(--color-gold-ghost);
+}
+
+/* ── Date field ── */
 .fl-field {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+    flex-shrink: 0;
 }
 
 .fl-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
 }
 
 .fl-input {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 0.6rem 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    color: #fff;
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    padding: 0.62rem 0.9rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--color-text);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-base);
     min-width: 150px;
 }
 
 .fl-input:focus {
-    border-color: rgba(201, 163, 84, 0.45);
+    border-color: var(--color-border-focus);
 }
 
 .fl-input::placeholder {
-    color: rgba(255, 255, 255, 0.18);
+    color: var(--color-text-placeholder);
 }
 
-.fl-select {
-    background: #0e0e14;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 0.6rem 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    color: #fff;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.2s;
+.fl-date-input {
     min-width: 140px;
 }
 
-.fl-select:focus {
-    border-color: rgba(201, 163, 84, 0.45);
+/* ── Search + Clear actions ── */
+.fl-search-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    flex-shrink: 0;
 }
 
 .fl-search-btn {
-    background: #c9a354;
-    color: #08080c;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-gold);
+    color: var(--color-bg);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 0.65rem 1.4rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity var(--transition-base);
     white-space: nowrap;
-    align-self: flex-end;
 }
 
 .fl-search-btn:hover {
@@ -126,50 +252,79 @@
 }
 
 .fl-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     background: transparent;
-    color: rgba(255, 255, 255, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 0.65rem 1rem;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--color-text-dim);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    padding: 0.65rem var(--space-4);
+    font-family: var(--font-body);
     font-size: 0.8rem;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    align-self: flex-end;
+    transition: color var(--transition-base), border-color var(--transition-base);
 }
 
 .fl-clear-btn:hover {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text);
+    border-color: var(--color-border-hover);
 }
 
-/* ── Sort / count bar ── */
+/* ── Active filter chips ── */
+.fl-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: var(--space-3);
+}
+
+.fl-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    background: var(--color-gold-ghost);
+    border: 1px solid rgba(201, 163, 84, 0.2);
+    border-radius: var(--radius-pill);
+    padding: 0.2rem 0.65rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SORT / COUNT BAR
+   ══════════════════════════════════════════════════════════════════ */
+
 .fl-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--space-5);
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
 }
 
 .fl-count {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-faint);
     letter-spacing: 0.05em;
 }
 
 .fl-sort-wrap {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
 }
 
 .fl-sort-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
     text-transform: uppercase;
     letter-spacing: 0.07em;
 }
@@ -192,40 +347,47 @@
 .fl-empty {
     text-align: center;
     padding: 4rem 2rem;
-    font-family: 'DM Sans', sans-serif;
-    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-body);
+    color: var(--color-text-faint);
     font-size: 0.9rem;
 }
 
-.fl-loading {
+.fl-loading,
+.fl-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
     text-align: center;
     padding: 4rem;
-    color: rgba(201, 163, 84, 0.6);
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
+}
+
+.fl-loading {
+    color: rgba(201, 163, 84, 0.6);
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
 .fl-error {
-    text-align: center;
-    padding: 3rem;
-    color: #e05f5f;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
+    color: var(--color-danger);
 }
 
-/* ── Flight card ── */
+/* ══════════════════════════════════════════════════════════════════
+   FLIGHT CARD
+   ══════════════════════════════════════════════════════════════════ */
+
 .fc {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     padding: 1.4rem 1.75rem;
     display: grid;
     grid-template-columns: minmax(0, 380px) auto auto auto auto;
     align-items: center;
-    gap: 1.5rem;
-    transition: border-color 0.25s, background 0.25s, transform 0.2s;
+    gap: var(--space-6);
+    transition: border-color var(--transition-medium), background var(--transition-medium), transform var(--transition-base);
     position: relative;
     overflow: hidden;
 }
@@ -237,14 +399,14 @@
     left: 0;
     width: 3px;
     height: 100%;
-    background: linear-gradient(180deg, #c9a354, transparent);
+    background: linear-gradient(180deg, var(--color-gold), transparent);
     opacity: 0;
-    transition: opacity 0.25s;
+    transition: opacity var(--transition-medium);
 }
 
 .fc:hover {
-    border-color: rgba(201, 163, 84, 0.25);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-border-hover);
+    background: var(--color-bg-card-hover);
     transform: translateY(-1px);
 }
 
@@ -255,7 +417,7 @@
 .fc-route {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-4);
     min-width: 0;
     overflow: hidden;
 }
@@ -268,10 +430,10 @@
 }
 
 .fc-code {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     line-height: 1;
     white-space: nowrap;
     overflow: hidden;
@@ -279,10 +441,10 @@
 }
 
 .fc-name {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 300;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--color-text-ghost);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-top: 0.2rem;
@@ -308,25 +470,20 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    border: 1.5px solid #c9a354;
+    border: 1.5px solid var(--color-gold);
     flex-shrink: 0;
 }
 
 .fc-dash {
     flex: 1;
     height: 1px;
-    background: rgba(201, 163, 84, 0.25);
-}
-
-.fc-plane {
-    color: #c9a354;
-    font-size: 0.9rem;
+    background: var(--color-gold-dim);
 }
 
 .fc-fn {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-ghost);
 }
 
 .fc-meta {
@@ -337,17 +494,17 @@
 }
 
 .fc-time {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-text-muted);
 }
 
 .fc-lbl {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-ghost);
 }
 
 .fc-seats-low {
@@ -360,53 +517,64 @@
 }
 
 .fc-price {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.4rem;
-    color: #c9a354;
+    color: var(--color-gold);
     font-weight: 600;
     line-height: 1;
 }
 
 .fc-price-lbl {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-ghost);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     margin-top: 0.2rem;
 }
 
 .fc-btn {
-    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    border: 1px solid #c9a354;
-    color: #c9a354;
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
     background: transparent;
     padding: 0.5rem 1.1rem;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: background var(--transition-base), color var(--transition-base);
     white-space: nowrap;
 }
 
 .fc-btn:hover {
-    background: #c9a354;
-    color: #08080c;
+    background: var(--color-gold);
+    color: var(--color-bg);
 }
 
 .fc-no-seats {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
-    color: #e05f5f;
+    color: var(--color-danger);
     padding: 0.45rem 0.8rem;
-    border: 1px solid rgba(224, 95, 95, 0.3);
-    border-radius: 5px;
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-sm);
 }
 
-/* ── Booking modal ── */
+.fc-plane-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BOOKING MODAL
+   ══════════════════════════════════════════════════════════════════ */
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -429,149 +597,189 @@
     position: relative;
 }
 
+.modal-wide {
+    max-width: 560px;
+}
+
 .modal-close {
     position: absolute;
-    top: 1rem;
+    top: var(--space-4);
     right: 1.1rem;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 1.1rem;
+    color: var(--color-text-dim);
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color var(--transition-base);
+    display: flex;
+    align-items: center;
 }
 
 .modal-close:hover {
-    color: #fff;
+    color: var(--color-text);
 }
 
 .modal-title {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.4rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     margin-bottom: 0.3rem;
 }
 
 .modal-title em {
     font-style: italic;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .modal-route {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.35);
-    margin-bottom: 1.5rem;
+    color: var(--color-text-dim);
+    margin-bottom: var(--space-6);
 }
 
 .modal-tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
 }
 
 .modal-tab {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: center;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     padding: 0.6rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--color-text-faint);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     text-align: center;
 }
 
 .modal-tab.active {
-    background: rgba(201, 163, 84, 0.1);
-    border-color: rgba(201, 163, 84, 0.4);
-    color: #c9a354;
+    background: var(--color-gold-faint);
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
 }
 
 .modal-field {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-4);
 }
 
 .modal-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--color-text-dim);
     display: block;
     margin-bottom: 0.4rem;
 }
 
-.modal-select {
+.modal-label-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+    opacity: 0.6;
+    vertical-align: middle;
+}
+
+.modal-select,
+.modal-input {
     width: 100%;
     background: #0a0a10;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
     padding: 0.65rem 0.9rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    color: #fff;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-base);
+}
+
+.modal-select {
     cursor: pointer;
 }
 
-.modal-select:focus {
-    border-color: rgba(201, 163, 84, 0.45);
+.modal-select:focus,
+.modal-input:focus {
+    border-color: var(--color-border-focus);
+}
+
+.modal-input::placeholder {
+    color: var(--color-text-placeholder);
+}
+
+.modal-input-err {
+    border-color: rgba(224, 95, 95, 0.5) !important;
+}
+
+.modal-field-err {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    color: var(--color-danger);
+    margin-top: 0.2rem;
 }
 
 .modal-summary {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 1rem;
-    margin: 1.25rem 0;
+    padding: var(--space-4);
+    margin: var(--space-5) 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .modal-total-lbl {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
 }
 
 .modal-total-sub {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-faint);
     margin-top: 0.1rem;
 }
 
 .modal-total {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.6rem;
-    color: #c9a354;
+    color: var(--color-gold);
     font-weight: 600;
 }
 
 .modal-btn {
     width: 100%;
-    background: #c9a354;
-    color: #08080c;
+    background: var(--color-gold);
+    color: var(--color-bg);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 0.85rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity var(--transition-base);
 }
 
 .modal-btn:hover:not(:disabled) {
@@ -584,108 +792,83 @@
 }
 
 .modal-error {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
-    color: #e05f5f;
-    background: rgba(224, 95, 95, 0.08);
-    border: 1px solid rgba(224, 95, 95, 0.2);
-    border-radius: 5px;
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-sm);
     padding: 0.55rem 0.8rem;
     margin-bottom: 0.75rem;
 }
 
 .modal-success {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
-    color: #4caf88;
+    color: var(--color-success);
     text-align: center;
     padding: 0.75rem;
-    background: rgba(76, 175, 136, 0.08);
-    border: 1px solid rgba(76, 175, 136, 0.2);
-    border-radius: 6px;
-}
-
-/* ── Responsive ── */
-@media (max-width: 700px) {
-    .fc {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
-    }
-
-    .fc-route {
-        grid-column: 1 / -1;
-    }
-
-    .fc-price-wrap,
-    .fc-meta,
-    .fc-btn,
-    .fc-no-seats {
-        grid-column: auto;
-    }
-}
-
-/* ── Multi-step modal extras ── */
-.modal-wide {
-    max-width: 560px;
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    border-radius: var(--radius-md);
 }
 
 /* Step indicator */
 .modal-steps {
     display: flex;
     align-items: center;
-    gap: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
 }
 
 .modal-step {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-family: 'DM Sans', sans-serif;
+    gap: var(--space-2);
+    font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.25);
-    transition: color 0.2s;
+    color: var(--color-text-faint);
+    transition: color var(--transition-base);
 }
 
 .modal-step.active {
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .modal-step-dot {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+    border: 1.5px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.65rem;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     flex-shrink: 0;
 }
 
 .modal-step.active .modal-step-dot {
-    border-color: #c9a354;
-    background: rgba(201, 163, 84, 0.12);
-    color: #c9a354;
+    border-color: var(--color-gold);
+    background: var(--color-gold-faint);
+    color: var(--color-gold);
 }
 
 .modal-step-line {
     flex: 1;
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-border);
     margin: 0 0.75rem;
 }
 
-/* Passenger forms scroll container */
+/* Passenger forms */
 .modal-passengers-scroll {
     max-height: 380px;
     overflow-y: auto;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-4);
     padding-right: 0.25rem;
     scrollbar-width: thin;
     scrollbar-color: rgba(201, 163, 84, 0.2) transparent;
@@ -700,11 +883,10 @@
     border-radius: 4px;
 }
 
-/* Individual passenger block */
 .modal-passenger {
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--color-border-subtle);
     border-radius: 8px;
-    padding: 1rem 1.1rem;
+    padding: var(--space-4) 1.1rem;
     margin-bottom: 0.75rem;
     background: rgba(255, 255, 255, 0.02);
 }
@@ -714,19 +896,49 @@
 }
 
 .modal-passenger-title {
-    margin-bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.modal-passenger-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
 }
 
 .modal-passenger-num {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
-/* 2-column grid inside each passenger */
+.modal-passenger-sub {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: var(--color-text-faint);
+    margin-left: var(--space-2);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+}
+
+.modal-passenger-section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-ghost);
+    margin: 0.85rem 0 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
 .modal-passenger-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -737,46 +949,15 @@
     margin-bottom: 0;
 }
 
-/* Span full name full width */
 .modal-passenger-grid .modal-field:first-child {
     grid-column: 1 / -1;
 }
 
-/* Text input (new, for passenger details) */
-.modal-input {
-    width: 100%;
-    background: #0a0a10;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 0.6rem 0.85rem;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    color: #fff;
-    outline: none;
-    transition: border-color 0.2s;
+.modal-field-full {
+    grid-column: 1 / -1;
 }
 
-.modal-input:focus {
-    border-color: rgba(201, 163, 84, 0.45);
-}
-
-.modal-input::placeholder {
-    color: rgba(255, 255, 255, 0.18);
-}
-
-.modal-input-err {
-    border-color: rgba(224, 95, 95, 0.5) !important;
-}
-
-.modal-field-err {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.65rem;
-    color: #e05f5f;
-    margin-top: 0.2rem;
-    display: block;
-}
-
-/* Back + confirm button row */
+/* Btn row */
 .modal-btn-row {
     display: flex;
     gap: 0.75rem;
@@ -784,151 +965,52 @@
 }
 
 .modal-btn-back {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: rgba(255, 255, 255, 0.45);
-    border-radius: 6px;
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-muted);
+    border-radius: var(--radius-md);
     padding: 0.85rem 1.1rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     white-space: nowrap;
 }
 
 .modal-btn-back:hover {
     border-color: rgba(255, 255, 255, 0.25);
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-text-muted);
 }
 
 .modal-btn-flex {
     flex: 1;
 }
 
-/* ── Passenger form sections ── */
-.modal-passenger-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.25);
-    margin-left: 0.5rem;
-    font-weight: 300;
-    letter-spacing: 0.04em;
-}
-
-.modal-passenger-section-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.2);
-    margin: 0.85rem 0 0.5rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.modal-passenger-title {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-}
-
-/* Full-width field inside 2-col grid */
-.modal-field-full {
-    grid-column: 1 / -1;
-}
-
-/* ── Lucide icon helpers ── */
-.fc-plane-icon {
-    color: #c9a354;
-    flex-shrink: 0;
-}
-
-.modal-label-icon {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 4px;
-    opacity: 0.6;
-    vertical-align: middle;
-}
-
-.modal-field-err {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-}
-
-.modal-tabs .modal-tab {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    justify-content: center;
-}
-
-.modal-btn-back {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.fc-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.fl-search-btn,
-.fl-clear-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.fl-loading,
-.fl-error {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-    display: inline-block;
-}
-
-/* ── Custom sort dropdown ── */
+/* ── Sort dropdown ── */
 .fl-sort-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    color: var(--color-text-muted);
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
     padding: 0.55rem 0.85rem;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
+    transition: border-color var(--transition-base), color var(--transition-base);
     white-space: nowrap;
 }
 
 .fl-sort-btn:hover {
-    border-color: rgba(201, 163, 84, 0.35);
-    color: #c9a354;
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
 }
 
 .fl-sort-menu {
@@ -951,15 +1033,15 @@
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-text-muted);
     background: none;
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     padding: 0.5rem 0.75rem;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition: background var(--transition-fast), color var(--transition-fast);
     text-align: left;
     width: 100%;
 }
@@ -970,6 +1052,58 @@
 }
 
 .fl-sort-option.active {
-    background: rgba(201, 163, 84, 0.1);
-    color: #c9a354;
+    background: var(--color-gold-faint);
+    color: var(--color-gold);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .fl-search-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fl-location-picker {
+        min-width: unset;
+    }
+
+    .fl-swap-btn {
+        align-self: center;
+        transform: rotate(90deg);
+    }
+
+    .fl-search-actions {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 700px) {
+    .fc {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .fc-route {
+        grid-column: 1 / -1;
+    }
+
+    .fl-location-row {
+        flex-wrap: wrap;
+    }
+}
+
+/* ── Spin animation ── */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+    display: inline-block;
 }

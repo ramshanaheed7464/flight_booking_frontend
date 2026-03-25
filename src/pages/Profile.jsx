@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { getProfile, updateProfile } from '../api/userApi';
+import { validateName, validatePassword, validatePasswordStrength, validateConfirmPassword } from './validation';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import './Profile.css';
@@ -63,12 +64,13 @@ export default function Profile() {
     }, [user]);
 
     const isAdmin = user?.role === 'ADMIN';
+    const newPwStrength = validatePasswordStrength(newPassword);
 
-    // ── Update name ──────────────────────────────────────────────
     const handleNameSave = async () => {
         setNameError('');
         setNameSuccess('');
-        if (!name.trim()) { setNameError('Name cannot be empty.'); return; }
+        const nameErr = validateName(name);
+        if (nameErr) { setNameError(nameErr); return; }
         setNameLoading(true);
         try {
             const res = await updateProfile({ name: name.trim() });
@@ -85,14 +87,15 @@ export default function Profile() {
         }
     };
 
-    // ── Update password ──────────────────────────────────────────
     const handlePasswordSave = async () => {
         setPwError('');
         setPwSuccess('');
         if (!currentPassword) { setPwError('Enter your current password.'); return; }
-        if (!newPassword) { setPwError('Enter a new password.'); return; }
-        if (newPassword.length < 6) { setPwError('New password must be at least 6 characters.'); return; }
-        if (newPassword !== confirmPassword) { setPwError('Passwords do not match.'); return; }
+        const pwErr = validatePassword(newPassword);
+        if (pwErr) { setPwError(pwErr); return; }
+        if (newPassword === currentPassword) { setPwError('New password must differ from the current one.'); return; }
+        const confirmErr = validateConfirmPassword(newPassword, confirmPassword);
+        if (confirmErr) { setPwError(confirmErr); return; }
         setPwLoading(true);
         try {
             await updateProfile({ currentPassword, newPassword });
@@ -292,6 +295,22 @@ export default function Profile() {
                                     {showNew ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
+                            {newPassword && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
+                                    <div style={{ display: 'flex', gap: '3px', flex: 1 }}>
+                                        {[1, 2, 3, 4].map(i => (
+                                            <div key={i} style={{
+                                                flex: 1, height: '3px', borderRadius: '2px',
+                                                background: i <= newPwStrength.score ? newPwStrength.color : 'rgba(255,255,255,0.1)',
+                                                transition: 'background 0.25s',
+                                            }} />
+                                        ))}
+                                    </div>
+                                    <span style={{ fontSize: '0.65rem', color: newPwStrength.color, minWidth: '48px', textAlign: 'right', fontFamily: 'var(--font-body)', transition: 'color 0.25s' }}>
+                                        {newPwStrength.label}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Confirm password */}

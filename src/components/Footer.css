@@ -1,28 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=Playfair+Display:ital@1&display=swap');
+@import '../styles/palette.css';
 
 .footer-root {
-    background: #08080c;
+    background: var(--color-bg);
     border-top: 1px solid rgba(201, 163, 84, 0.1);
     padding: 2.5rem 2.5rem 1.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--space-4);
 }
 
 .footer-brand {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-style: italic;
-    font-size: 1rem;
-    color: #c9a354;
+    font-size: var(--text-md);
+    color: var(--color-gold);
     letter-spacing: 0.02em;
 }
 
 .footer-copy {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-ghost);
     letter-spacing: 0.04em;
 }
 
@@ -32,15 +32,15 @@
 }
 
 .footer-links a {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-faint);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color var(--transition-base);
 }
 
 .footer-links a:hover {
-    color: #c9a354;
+    color: var(--color-gold);
 }

@@ -4,12 +4,14 @@ import { AuthProvider, AuthContext } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import Flights from "./pages/Flights";
 import Bookings from "./pages/Bookings";
 import AdminPanel from "./pages/AdminPanel";
 import Profile from "./pages/Profile";
 
-// Guard: only ADMIN can access /admin
 function AdminRoute({ children }) {
   const { user } = useContext(AuthContext);
   if (!user) return <Navigate to="/login" />;
@@ -17,7 +19,6 @@ function AdminRoute({ children }) {
   return children;
 }
 
-// Guard: redirect logged-in admins away from public pages
 function UserRoute({ children }) {
   const { user } = useContext(AuthContext);
   if (user?.role === "ADMIN") return <Navigate to="/admin" />;
@@ -31,7 +32,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/flights" element={<UserRoute><Flights /></UserRoute>} />
           <Route path="/bookings" element={<UserRoute><Bookings /></UserRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />

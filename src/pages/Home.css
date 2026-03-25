@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+@import '../styles/palette.css';
 
 .home-root {
     min-height: 100vh;
-    background: #08080c;
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,20 +25,20 @@
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(201, 163, 84, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201, 163, 84, 0.04) 1px, transparent 1px);
+        linear-gradient(var(--color-gold-ghost) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-gold-ghost) 1px, transparent 1px);
     background-size: 60px 60px;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 70%);
     pointer-events: none;
 }
 
 .home-eyebrow {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #c9a354;
+    color: var(--color-gold);
     margin-bottom: 1.5rem;
     position: relative;
     display: flex;
@@ -52,14 +52,14 @@
     display: block;
     width: 32px;
     height: 1px;
-    background: rgba(201, 163, 84, 0.4);
+    background: var(--color-gold-dim);
 }
 
 .home-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     text-align: center;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -69,12 +69,12 @@
 
 .home-title em {
     font-style: italic;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .home-subtitle {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
+    font-family: var(--font-body);
+    font-size: var(--text-md);
     font-weight: 300;
     color: rgba(255, 255, 255, 0.38);
     text-align: center;
@@ -86,22 +86,22 @@
 
 .home-actions {
     display: flex;
-    gap: 1rem;
+    gap: var(--space-4);
     position: relative;
     flex-wrap: wrap;
     justify-content: center;
 }
 
 .home-cta {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 0.8rem 2rem;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
 .home-cta:hover {
@@ -110,26 +110,26 @@
 }
 
 .home-cta.primary {
-    background: #c9a354;
-    color: #08080c;
+    background: var(--color-gold);
+    color: var(--color-bg);
 }
 
 .home-cta.secondary {
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.65);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
 }
 
 .home-cta.secondary:hover {
-    border-color: rgba(201, 163, 84, 0.4);
-    color: #c9a354;
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
 }
 
 .home-stats {
     position: relative;
     display: flex;
-    gap: 4rem;
+    gap: var(--space-16);
     margin-top: 5rem;
-    padding-top: 3rem;
+    padding-top: var(--space-12);
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     flex-wrap: wrap;
     justify-content: center;
@@ -140,17 +140,17 @@
 }
 
 .home-stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
 }
 
 .home-stat-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-ghost);
     margin-top: 0.2rem;
 }

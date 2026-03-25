@@ -9,6 +9,7 @@ import {
     Pencil,
     Trash2,
     X,
+    Check,
     AlertCircle,
     ArrowRight,
     Users,
@@ -18,10 +19,21 @@ import {
     Loader2,
     Search,
     UserCircle,
+    Globe,
+    Utensils,
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { getFlights, addFlight, updateFlight, deleteFlight } from '../api/flightApi';
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../api/bookingApi';
+import {
+    getNationalities, addNationality, updateNationality, deleteNationality,
+    getMealPreferences, addMealPreference, updateMealPreference, deleteMealPreference,
+} from '../api/bookingOptionsApi';
+import {
+    validateFlightNumber, validateCity, validateDeparture,
+    validateArrival, validateSeats, validatePrice, runValidators,
+    DEFAULT_NATIONALITIES, DEFAULT_MEAL_PREFERENCES,
+} from './validation';
 import './AdminPanel.css';
 
 // ─── Status helpers ───────────────────────────────────────────────
@@ -61,27 +73,39 @@ function FlightModal({ flight, onClose, onSaved }) {
         } : { ...EMPTY_FLIGHT }
     );
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState('');
 
-    const handle = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    const handle = e => {
+        const { name, value } = e.target;
+        setForm(f => ({ ...f, [name]: value }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    };
+
+    const validate = () => runValidators({
+        flightNumber: validateFlightNumber(form.flightNumber),
+        source: validateCity(form.source, 'Origin'),
+        destination: validateCity(form.destination, 'Destination'),
+        departureTime: validateDeparture(form.departureTime),
+        arrivalTime: validateArrival(form.departureTime, form.arrivalTime),
+        seatsAvailable: validateSeats(form.seatsAvailable),
+        price: validatePrice(form.price),
+    });
 
     const handleSubmit = async () => {
-        setError('');
-        const { flightNumber, source, destination, departureTime, arrivalTime, seatsAvailable, price } = form;
-        if (!flightNumber || !source || !destination || !departureTime || !arrivalTime || !seatsAvailable || !price) {
-            setError('All fields are required.');
-            return;
-        }
+        setServerError('');
+        const { errors: fieldErrors, isValid } = validate();
+        if (!isValid) { setErrors(fieldErrors); return; }
         setLoading(true);
         try {
             const payload = {
-                flightNumber,
-                source,
-                destination,
-                departureTime,
-                arrivalTime,
-                seatsAvailable: parseInt(seatsAvailable),
-                price: parseFloat(price),
+                flightNumber: form.flightNumber.trim().toUpperCase(),
+                source: form.source.trim(),
+                destination: form.destination.trim(),
+                departureTime: form.departureTime,
+                arrivalTime: form.arrivalTime,
+                seatsAvailable: parseInt(form.seatsAvailable),
+                price: parseFloat(form.price),
             };
             if (isEdit) {
                 await updateFlight(flight.id, payload);
@@ -91,7 +115,7 @@ function FlightModal({ flight, onClose, onSaved }) {
             onSaved();
             onClose();
         } catch (e) {
-            setError(e.response?.data || 'Operation failed. Please try again.');
+            setServerError(e.response?.data || 'Operation failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -107,44 +131,51 @@ function FlightModal({ flight, onClose, onSaved }) {
                 <div className="ap-form-row">
                     <div className="ap-form-field">
                         <label className="ap-form-label">Flight Number</label>
-                        <input className="ap-form-input" name="flightNumber" placeholder="e.g. PK101" value={form.flightNumber} onChange={handle} />
+                        <input className={`ap-form-input${errors.flightNumber ? ' ap-input-err' : ''}`} name="flightNumber" placeholder="e.g. PK101" value={form.flightNumber} onChange={handle} />
+                        {errors.flightNumber && <span className="ap-field-err">{errors.flightNumber}</span>}
                     </div>
                     <div className="ap-form-field">
-                        <label className="ap-form-label">Price ($)</label>
-                        <input className="ap-form-input" name="price" type="number" placeholder="85" value={form.price} onChange={handle} />
+                        <label className="ap-form-label">Price (PKR)</label>
+                        <input className={`ap-form-input${errors.price ? ' ap-input-err' : ''}`} name="price" type="number" min="1" placeholder="e.g. 15000" value={form.price} onChange={handle} />
+                        {errors.price && <span className="ap-field-err">{errors.price}</span>}
                     </div>
                 </div>
 
                 <div className="ap-form-row">
                     <div className="ap-form-field">
                         <label className="ap-form-label">Origin</label>
-                        <input className="ap-form-input" name="source" placeholder="e.g. Karachi" value={form.source} onChange={handle} />
+                        <input className={`ap-form-input${errors.source ? ' ap-input-err' : ''}`} name="source" placeholder="e.g. Karachi" value={form.source} onChange={handle} />
+                        {errors.source && <span className="ap-field-err">{errors.source}</span>}
                     </div>
                     <div className="ap-form-field">
                         <label className="ap-form-label">Destination</label>
-                        <input className="ap-form-input" name="destination" placeholder="e.g. Lahore" value={form.destination} onChange={handle} />
+                        <input className={`ap-form-input${errors.destination ? ' ap-input-err' : ''}`} name="destination" placeholder="e.g. Lahore" value={form.destination} onChange={handle} />
+                        {errors.destination && <span className="ap-field-err">{errors.destination}</span>}
                     </div>
                 </div>
 
                 <div className="ap-form-row">
                     <div className="ap-form-field">
                         <label className="ap-form-label">Departure</label>
-                        <input className="ap-form-input" name="departureTime" type="datetime-local" value={form.departureTime} onChange={handle} style={{ colorScheme: 'dark' }} />
+                        <input className={`ap-form-input${errors.departureTime ? ' ap-input-err' : ''}`} name="departureTime" type="datetime-local" value={form.departureTime} onChange={handle} style={{ colorScheme: 'dark' }} />
+                        {errors.departureTime && <span className="ap-field-err">{errors.departureTime}</span>}
                     </div>
                     <div className="ap-form-field">
                         <label className="ap-form-label">Arrival</label>
-                        <input className="ap-form-input" name="arrivalTime" type="datetime-local" value={form.arrivalTime} onChange={handle} style={{ colorScheme: 'dark' }} />
+                        <input className={`ap-form-input${errors.arrivalTime ? ' ap-input-err' : ''}`} name="arrivalTime" type="datetime-local" value={form.arrivalTime} onChange={handle} style={{ colorScheme: 'dark' }} />
+                        {errors.arrivalTime && <span className="ap-field-err">{errors.arrivalTime}</span>}
                     </div>
                 </div>
 
                 <div className="ap-form-field">
                     <label className="ap-form-label">Seats Available</label>
-                    <input className="ap-form-input" name="seatsAvailable" type="number" placeholder="100" value={form.seatsAvailable} onChange={handle} />
+                    <input className={`ap-form-input${errors.seatsAvailable ? ' ap-input-err' : ''}`} name="seatsAvailable" type="number" min="1" max="1000" placeholder="e.g. 180" value={form.seatsAvailable} onChange={handle} />
+                    {errors.seatsAvailable && <span className="ap-field-err">{errors.seatsAvailable}</span>}
                 </div>
 
-                {error && (
+                {serverError && (
                     <div className="ap-modal-error">
-                        <AlertCircle size={13} />{error}
+                        <AlertCircle size={13} />{serverError}
                     </div>
                 )}
 
@@ -385,7 +416,19 @@ function BookingsTab() {
         setLoading(true);
         getAllBookings()
             .then(r => setBookings(r.data))
-            .catch(() => setError('Failed to load bookings.'))
+            .catch(e => {
+                const status = e.response?.status;
+                const msg = e.response?.data?.message || e.response?.data || e.message || 'Unknown error';
+                if (status === 401 || status === 403) {
+                    setError(`Access denied (${status}) — make sure your account has ADMIN role.`);
+                } else if (status === 404) {
+                    setError('Endpoint not found (404) — check that GET /api/bookings/all exists on your backend.');
+                } else if (!e.response) {
+                    setError('Cannot reach server — is your backend running?');
+                } else {
+                    setError(`Failed to load bookings (${status ?? 'no response'}): ${msg}`);
+                }
+            })
             .finally(() => setLoading(false));
     };
     useEffect(() => { load(); }, []);
@@ -717,6 +760,199 @@ function DashboardTab({ onNav }) {
     );
 }
 
+// ─── Booking Options Tab ──────────────────────────────────────────
+function OptionList({ title, icon: Icon, items, onAdd, onUpdate, onDelete, placeholder }) {
+    const [newVal, setNewVal] = useState('');
+    const [editId, setEditId] = useState(null);
+    const [editVal, setEditVal] = useState('');
+    const [error, setError] = useState('');
+    const [saving, setSaving] = useState(false);
+
+    const handleAdd = async () => {
+        if (!newVal.trim()) { setError('Value cannot be empty.'); return; }
+        setSaving(true); setError('');
+        try { await onAdd(newVal.trim()); setNewVal(''); }
+        catch (e) { setError(e.response?.data || 'Failed to add.'); }
+        finally { setSaving(false); }
+    };
+
+    const handleUpdate = async (id) => {
+        if (!editVal.trim()) { setError('Value cannot be empty.'); return; }
+        setSaving(true); setError('');
+        try { await onUpdate(id, editVal.trim()); setEditId(null); setEditVal(''); }
+        catch (e) { setError(e.response?.data || 'Failed to update.'); }
+        finally { setSaving(false); }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Delete this item?')) return;
+        try { await onDelete(id); }
+        catch (e) { setError(e.response?.data || 'Failed to delete.'); }
+    };
+
+    return (
+        <div className="ap-options-card">
+            <div className="ap-options-header">
+                <Icon size={14} style={{ color: 'var(--color-gold)' }} />
+                <span className="ap-options-title">{title}</span>
+                <span className="ap-options-count">{items.length}</span>
+            </div>
+
+            {/* Add new */}
+            <div className="ap-options-add-row">
+                <input
+                    className="ap-form-input ap-options-input"
+                    placeholder={placeholder}
+                    value={newVal}
+                    onChange={e => { setNewVal(e.target.value); setError(''); }}
+                    onKeyDown={e => e.key === 'Enter' && handleAdd()}
+                />
+                <button className="ap-add-btn" onClick={handleAdd} disabled={saving}>
+                    <Plus size={13} /> Add
+                </button>
+            </div>
+            {error && <div className="ap-field-err" style={{ marginBottom: '0.5rem' }}>{error}</div>}
+
+            {/* List */}
+            <div className="ap-options-list">
+                {items.length === 0 && (
+                    <div className="ap-options-empty">No items yet — add one above.</div>
+                )}
+                {items.map(item => {
+                    const id = item.id ?? item;
+                    const name = item.name ?? item;
+                    const isEditing = editId === id;
+                    return (
+                        <div key={id} className="ap-options-row">
+                            {isEditing ? (
+                                <>
+                                    <input
+                                        className="ap-form-input ap-options-inline-input"
+                                        value={editVal}
+                                        onChange={e => setEditVal(e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') handleUpdate(id);
+                                            if (e.key === 'Escape') { setEditId(null); setEditVal(''); }
+                                        }}
+                                        autoFocus
+                                    />
+                                    <button className="ap-edit-btn" onClick={() => handleUpdate(id)} disabled={saving}>
+                                        <Check size={11} /> Save
+                                    </button>
+                                    <button className="ap-modal-cancel ap-options-cancel-btn" onClick={() => { setEditId(null); setEditVal(''); }}>
+                                        <X size={11} />
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="ap-options-name">{name}</span>
+                                    <div className="ap-actions">
+                                        <button className="ap-edit-btn" onClick={() => { setEditId(id); setEditVal(name); }}>
+                                            <Pencil size={11} /> Edit
+                                        </button>
+                                        <button className="ap-del-btn" onClick={() => handleDelete(id)}>
+                                            <Trash2 size={11} /> Delete
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+
+
+function BookingOptionsTab() {
+    const [nationalities, setNationalities] = useState([]);
+    const [meals, setMeals] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [usingDefaults, setUsingDefaults] = useState(false);
+
+    const load = () => {
+        setLoading(true);
+        setError('');
+        Promise.all([getNationalities(), getMealPreferences()])
+            .then(([nr, mr]) => {
+                // If backend returns empty arrays, seed from defaults as display-only
+                const nats = nr.data?.length ? nr.data : DEFAULT_NATIONALITIES.map((n, i) => ({ id: i, name: n }));
+                const mealsD = mr.data?.length ? mr.data : DEFAULT_MEAL_PREFERENCES.map((m, i) => ({ id: i, name: m }));
+                setNationalities(nats);
+                setMeals(mealsD);
+                setUsingDefaults(!nr.data?.length || !mr.data?.length);
+            })
+            .catch(e => {
+                const status = e.response?.status;
+                if (status === 404 || !e.response) {
+                    // Backend endpoint not implemented yet — show defaults as read-only
+                    setNationalities(DEFAULT_NATIONALITIES.map((n, i) => ({ id: i, name: n })));
+                    setMeals(DEFAULT_MEAL_PREFERENCES.map((m, i) => ({ id: i, name: m })));
+                    setUsingDefaults(true);
+                } else if (status === 403) {
+                    setError('Access denied (403) — the /api/booking-options/* endpoints require ADMIN role. Check your Spring Security config (hasAuthority vs hasRole) and JWT claims. See the browser console for details.');
+                } else {
+                    setError(`Failed to load booking options (${status ?? 'no response'}).`);
+                }
+            })
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => { load(); }, []);
+
+    // Wrap API calls so the list re-fetches after each mutation
+    const wrap = fn => async (...args) => { await fn(...args); load(); };
+
+    return (
+        <>
+            <div className="ap-page-header">
+                <div>
+                    <div className="ap-page-title">Booking <em>Options</em></div>
+                    <div className="ap-page-sub">Manage nationalities and meal preferences shown during booking.</div>
+                </div>
+            </div>
+
+            {loading && <div className="ap-loading"><Loader2 size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />Loading…</div>}
+            {error && <div className="ap-error">{error}</div>}
+
+            {!loading && usingDefaults && (
+                <div className="ap-options-notice">
+                    <AlertCircle size={13} />
+                    Backend endpoints for booking options are not set up yet. Showing built-in defaults — add the
+                    {' '}<code>GET/POST /api/booking-options/nationalities</code> and <code>/meals</code> endpoints
+                    to enable live editing.
+                </div>
+            )}
+
+            {!loading && !error && (
+                <div className="ap-options-grid">
+                    <OptionList
+                        title="Nationalities"
+                        icon={Globe}
+                        items={nationalities}
+                        placeholder="e.g. Brazilian"
+                        onAdd={wrap(name => addNationality(name))}
+                        onUpdate={wrap((id, name) => updateNationality(id, name))}
+                        onDelete={wrap(id => deleteNationality(id))}
+                    />
+                    <OptionList
+                        title="Meal Preferences"
+                        icon={Utensils}
+                        items={meals}
+                        placeholder="e.g. Nut Free"
+                        onAdd={wrap(name => addMealPreference(name))}
+                        onUpdate={wrap((id, name) => updateMealPreference(id, name))}
+                        onDelete={wrap(id => deleteMealPreference(id))}
+                    />
+                </div>
+            )}
+        </>
+    );
+}
+
 // ─── Main AdminPanel ──────────────────────────────────────────────
 export default function AdminPanel() {
     const { user, logout } = useContext(AuthContext);
@@ -738,6 +974,7 @@ export default function AdminPanel() {
         { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
         { id: 'flights', label: 'Flights', icon: Plane },
         { id: 'bookings', label: 'Bookings', icon: BookOpen },
+        { id: 'options', label: 'Booking Options', icon: Globe },
     ];
 
     return (
@@ -793,6 +1030,7 @@ export default function AdminPanel() {
                     {tab === 'dashboard' && <DashboardTab onNav={setTab} />}
                     {tab === 'flights' && <FlightsTab />}
                     {tab === 'bookings' && <BookingsTab />}
+                    {tab === 'options' && <BookingOptionsTab />}
                 </main>
             </div>
         </div>

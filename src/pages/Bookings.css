@@ -1,15 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap');
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+@import '../styles/palette.css';
 
 /* ── Page layout ── */
 .bk-root {
     min-height: 100vh;
-    background: #08080c;
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
 }
@@ -17,25 +11,25 @@
 .bk-hero {
     padding: 7rem 2.5rem 2rem;
     background: linear-gradient(180deg, rgba(201, 163, 84, 0.06) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .bk-title {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
 }
 
 .bk-title em {
     font-style: italic;
-    color: #c9a354;
+    color: var(--color-gold);
 }
 
 .bk-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.3);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--color-text-dim);
     font-weight: 300;
     margin-top: 0.35rem;
 }
@@ -43,23 +37,23 @@
 /* ── Status tabs ── */
 .bk-tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
     flex-wrap: wrap;
 }
 
 .bk-tab {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    padding: 0.45rem 1rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.35);
+    padding: 0.45rem var(--space-4);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border-input);
+    color: var(--color-text-dim);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -67,13 +61,13 @@
 
 .bk-tab:hover {
     border-color: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-text-muted);
 }
 
 .bk-tab.active {
-    background: rgba(201, 163, 84, 0.1);
-    border-color: rgba(201, 163, 84, 0.4);
-    color: #c9a354;
+    background: var(--color-gold-faint);
+    border-color: var(--color-gold-dim);
+    color: var(--color-gold);
 }
 
 .bk-tab-dot {
@@ -98,11 +92,11 @@
 }
 
 .bk-count {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-faint);
     letter-spacing: 0.05em;
-    margin-bottom: 1.25rem;
+    margin-bottom: var(--space-5);
 }
 
 .bk-empty {
@@ -111,41 +105,42 @@
 }
 
 .bk-empty-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-4);
 }
 
 .bk-empty-text {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.25);
-    margin-bottom: 1.5rem;
+    color: var(--color-text-faint);
+    margin-bottom: var(--space-6);
 }
 
 .bk-empty-link {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
     text-decoration: none;
-    color: #c9a354;
+    color: var(--color-gold);
     border: 1px solid rgba(201, 163, 84, 0.3);
     padding: 0.6rem 1.4rem;
-    border-radius: 5px;
-    transition: background 0.2s;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-base);
 }
 
 .bk-empty-link:hover {
-    background: rgba(201, 163, 84, 0.08);
+    background: var(--color-gold-ghost);
 }
 
 .bk-loading {
     text-align: center;
     padding: 4rem;
     color: rgba(201, 163, 84, 0.6);
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -154,18 +149,18 @@
 .bk-error {
     text-align: center;
     padding: 3rem;
-    color: #e05f5f;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--color-danger);
+    font-family: var(--font-body);
     font-size: 0.85rem;
 }
 
 /* ── Booking card ── */
 .bc {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color var(--transition-base), transform var(--transition-base);
 }
 
 .bc:hover {
@@ -175,56 +170,56 @@
 
 .bc-header {
     background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: 0.85rem var(--space-6);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
 }
 
 .bc-header-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-4);
 }
 
 .bc-id {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text-faint);
 }
 
 .bc-type {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-dim);
     padding: 0.15rem 0.5rem;
     background: rgba(255, 255, 255, 0.04);
     border-radius: 3px;
 }
 
 .bc-status {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 0.2rem 0.65rem;
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
     border: 1px solid;
 }
 
 .bc-body {
-    padding: 1.25rem 1.5rem;
+    padding: var(--space-5) var(--space-6);
     display: grid;
     grid-template-columns: minmax(0, 300px) auto auto auto auto 1fr;
     align-items: center;
-    gap: 1.25rem;
+    gap: var(--space-5);
 }
 
 .bc-route {
@@ -236,10 +231,10 @@
 }
 
 .bc-code {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--color-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -247,9 +242,9 @@
 }
 
 .bc-city {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.28);
+    color: var(--color-text-label);
     text-transform: uppercase;
     letter-spacing: 0.07em;
     white-space: nowrap;
@@ -268,9 +263,9 @@
     background: rgba(201, 163, 84, 0.18);
 }
 
-.bc-plane {
-    color: #c9a354;
-    font-size: 0.8rem;
+.bc-plane-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
 }
 
 .bc-detail {
@@ -281,46 +276,49 @@
 }
 
 .bc-detail-lbl {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
     text-transform: uppercase;
     letter-spacing: 0.07em;
-    color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-ghost);
 }
 
 .bc-detail-val {
-    font-family: 'DM Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--color-text-muted);
 }
 
 .bc-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--space-2);
     align-items: center;
     justify-content: flex-end;
     justify-self: end;
 }
 
 .bc-cancel-btn {
-    font-family: 'DM Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    border: 1px solid rgba(224, 95, 95, 0.35);
+    border: 1px solid var(--color-danger-border);
     color: rgba(224, 95, 95, 0.7);
     background: transparent;
     padding: 0.4rem 0.85rem;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-base);
 }
 
 .bc-cancel-btn:hover:not(:disabled) {
-    background: rgba(224, 95, 95, 0.1);
-    border-color: #e05f5f;
-    color: #e05f5f;
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .bc-cancel-btn:disabled {
@@ -352,18 +350,18 @@
 }
 
 .bc-leg {
-    padding: 1.25rem 1.5rem 1.25rem;
+    padding: var(--space-5) var(--space-6);
 }
 
 .bc-leg-label {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.6rem;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
 .bc-leg-badge {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.09em;
@@ -373,8 +371,8 @@
 }
 
 .bc-leg-out {
-    background: rgba(201, 163, 84, 0.1);
-    color: #c9a354;
+    background: var(--color-gold-faint);
+    color: var(--color-gold);
     border: 1px solid rgba(201, 163, 84, 0.25);
 }
 
@@ -385,7 +383,7 @@
 }
 
 .bc-leg-status {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -400,10 +398,10 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin: 0 1.5rem;
+    margin: 0 var(--space-6);
     padding: 0.6rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .bc-leg-divider-line {
@@ -413,7 +411,7 @@
 }
 
 .bc-leg-divider-label {
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.1em;
@@ -423,10 +421,10 @@
 }
 
 .bc-rt-actions {
-    padding: 1rem 1.5rem 1.25rem;
+    padding: var(--space-4) var(--space-6) var(--space-5);
     border-top: 1px solid rgba(255, 255, 255, 0.04);
     display: flex;
-    gap: 0.6rem;
+    gap: var(--space-2);
     justify-content: flex-end;
 }
 
@@ -435,27 +433,8 @@
     padding: 0.35rem 0.75rem !important;
 }
 
-/* ── Lucide icon helpers ── */
-.bc-plane-icon {
-    color: #c9a354;
-    flex-shrink: 0;
-}
-
-.bk-empty-icon {
-    color: rgba(255, 255, 255, 0.15);
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.bc-cancel-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-}
-
 .modal-passenger-icon {
-    color: #c9a354;
+    color: var(--color-gold);
     flex-shrink: 0;
 }
 
