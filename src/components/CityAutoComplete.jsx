@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { MapPin, X } from 'lucide-react';
 
-/**
- * Normalises a raw city object from the API into { name, country }.
- * Handles multiple common field-name conventions so the component
- * works regardless of what the backend returns.
- */
 function normalise(c) {
     const name =
         c.name ??
@@ -35,19 +30,11 @@ export default function CityAutocomplete({ label, cities, value, onChange, place
         setQuery(value || '');
     }, [value]);
 
-    // Normalise once so filtering always uses .name / .country
     const normalisedCities = cities.map(normalise);
-
-    // DEV ONLY: log the raw first city so you can verify field names
-    useEffect(() => {
-        if (cities.length > 0 && process.env.NODE_ENV === 'development') {
-            console.log('[CityAutocomplete] Raw city sample:', cities[0]);
-        }
-    }, [cities]);
 
     const suggestions = normalisedCities
         .filter(c => {
-            if (!query.trim()) return true;          // show all on empty input
+            if (!query.trim()) return true;
             const q = query.toLowerCase();
             return (
                 c.name.toLowerCase().includes(q) ||
@@ -57,9 +44,11 @@ export default function CityAutocomplete({ label, cities, value, onChange, place
         .slice(0, 10);
 
     const select = (city) => {
+        // Show "Karachi, Pakistan" in the input for UX
         const display = city.country ? `${city.name}, ${city.country}` : city.name;
         setQuery(display);
-        onChange(display);
+        // But pass ONLY the city name to the filter so it matches f.source / f.destination
+        onChange(city.name);
         setOpen(false);
         inputRef.current?.blur();
     };
@@ -67,7 +56,7 @@ export default function CityAutocomplete({ label, cities, value, onChange, place
     const handleChange = (e) => {
         const val = e.target.value;
         setQuery(val);
-        onChange(val);
+        onChange(val); // free text — pass as-is
         setHighlighted(0);
         setOpen(true);
     };
@@ -107,32 +96,35 @@ export default function CityAutocomplete({ label, cities, value, onChange, place
                 {query && (
                     <button
                         className="autocomplete-clear"
-                        onClick={() => { setQuery(''); onChange(''); setOpen(false); inputRef.current?.focus(); }}
+                        onClick={() => { setQuery(''); onChange(''); setOpen(true); inputRef.current?.focus(); }}
                     >
                         <X size={11} />
                     </button>
                 )}
             </div>
-            {open && query.trim().length > 0 && (
+
+            {open && suggestions.length > 0 && (
                 <div className="autocomplete-list">
-                    {suggestions.length > 0 ? (
-                        suggestions.map((city, i) => (
-                            <button
-                                key={city.id ?? `${city.name}-${i}`}
-                                className={`autocomplete-item${i === highlighted ? ' is-highlighted' : ''}`}
-                                onMouseDown={(e) => { e.preventDefault(); select(city); }}
-                                onMouseEnter={() => setHighlighted(i)}
-                            >
-                                <MapPin size={11} className="autocomplete-item-icon" />
-                                <span className="autocomplete-item-label">{city.name}</span>
-                                {city.country && (
-                                    <span className="autocomplete-item-sub">{city.country}</span>
-                                )}
-                            </button>
-                        ))
-                    ) : (
-                        <div className="autocomplete-empty">No cities found for "{query}"</div>
-                    )}
+                    {suggestions.map((city, i) => (
+                        <button
+                            key={city.id ?? `${city.name}-${i}`}
+                            className={`autocomplete-item${i === highlighted ? ' is-highlighted' : ''}`}
+                            onMouseDown={(e) => { e.preventDefault(); select(city); }}
+                            onMouseEnter={() => setHighlighted(i)}
+                        >
+                            <MapPin size={11} className="autocomplete-item-icon" />
+                            <span className="autocomplete-item-label">{city.name}</span>
+                            {city.country && (
+                                <span className="autocomplete-item-sub">{city.country}</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {open && query.trim().length > 0 && suggestions.length === 0 && (
+                <div className="autocomplete-list">
+                    <div className="autocomplete-empty">No cities found for "{query}"</div>
                 </div>
             )}
         </div>
