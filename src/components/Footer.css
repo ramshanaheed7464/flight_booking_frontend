@@ -1,0 +1,46 @@
+@import '../styles/palette.css';
+
+.footer-root {
+    background: var(--color-bg);
+    border-top: 1px solid rgba(201, 163, 84, 0.1);
+    padding: 2.5rem 2.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.footer-brand {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-md);
+    color: var(--color-gold);
+    letter-spacing: 0.02em;
+}
+
+.footer-copy {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-ghost);
+    letter-spacing: 0.04em;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+    text-decoration: none;
+    transition: color var(--transition-base);
+}
+
+.footer-links a:hover {
+    color: var(--color-gold);
+}

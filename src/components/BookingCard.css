@@ -1,0 +1,110 @@
+@import '../styles/palette.css';
+
+.bc {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color var(--transition-base), transform var(--transition-base);
+}
+
+.bc:hover {
+    border-color: rgba(201, 163, 84, 0.2);
+    transform: translateY(-1px);
+}
+
+.bc-header {
+    background: var(--color-gold-ghost);
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: var(--space-4) var(--space-6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bc-id {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-faint);
+}
+
+.bc-status {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid;
+}
+
+.bc-body {
+    padding: var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+}
+
+.bc-route {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+}
+
+.bc-code {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.bc-city-name {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.bc-arrow {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.bc-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(201, 163, 84, 0.2);
+}
+
+.bc-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.bc-detail-label {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-ghost);
+}
+
+.bc-detail-val {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+}
+
+.bc-price {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--color-gold);
+    font-weight: 600;
+    text-align: right;
+}

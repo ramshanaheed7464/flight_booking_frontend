@@ -1,0 +1,185 @@
+@import '../styles/palette.css';
+
+.fc {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    transition: border-color var(--transition-medium), background var(--transition-medium), transform var(--transition-base);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.fc::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-gold), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+}
+
+.fc:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-bg-card-hover);
+    transform: translateY(-1px);
+}
+
+.fc:hover::before {
+    opacity: 1;
+}
+
+.fc-route {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex: 1;
+}
+
+.fc-city {
+    text-align: center;
+}
+
+.fc-code {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1;
+}
+
+.fc-name {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 300;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.25rem;
+}
+
+.fc-mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.fc-line {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.fc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-gold);
+    flex-shrink: 0;
+}
+
+.fc-dot-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
+}
+
+.fc-dash {
+    flex: 1;
+    height: 1px;
+    background: var(--color-gold-dim);
+}
+
+.fc-plane-icon {
+    color: var(--color-gold);
+    flex-shrink: 0;
+}
+
+.fc-duration {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-text-faint);
+}
+
+.fc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 100px;
+}
+
+.fc-time {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.fc-label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-ghost);
+}
+
+.fc-price-wrap {
+    text-align: right;
+    min-width: 90px;
+}
+
+.fc-price {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    font-weight: 600;
+    line-height: 1;
+}
+
+.fc-price-label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.2rem;
+}
+
+.fc-btn {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
+    background: transparent;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-base), color var(--transition-base);
+    white-space: nowrap;
+}
+
+.fc-btn:hover:not(:disabled) {
+    background: var(--color-gold);
+    color: var(--color-bg);
+}
+
+.fc-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.fc-btn.booked {
+    border-color: var(--color-success);
+    color: var(--color-success);
+}
