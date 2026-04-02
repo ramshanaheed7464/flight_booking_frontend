@@ -731,7 +731,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--color-bg-card);
+    background: var(--color-bg-menu);
     border: 1px solid var(--color-border-gold);
     border-top: none;
     border-bottom-left-radius: var(--radius-md);
@@ -826,6 +826,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     width: 100%;
     max-width: 460px;
     position: relative;
+    /* Allow dropdown menus to overflow the modal box */
+    overflow: visible;
 }
 
 .modal-wide {

@@ -7,13 +7,21 @@ import {
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import BookingModal from './BookingModal';
+import Footer from '../components/Footer';
 
 export default function FlightDetailModal({ flight, allFlights, onClose, onBooked, nationalities }) {
     const [showBooking, setShowBooking] = useState(false);
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const flightMeals = flight.meals
+    const toBool = v => v === true || v === 1 || v === '1' || String(v).toLowerCase() === 'true';
+
+    const wifiOn = toBool(flight.wifiAvailable);          // @JsonProperty("wifiAvailable")
+    const mealsOn = toBool(flight.mealsIncluded);          // field: mealsIncluded
+    const entertainOn = toBool(flight.entertainmentAvailable); // @JsonProperty("entertainmentAvailable")
+    const refundOn = toBool(flight.refundable);             // field: refundable
+
+    const flightMeals = mealsOn && flight.meals
         ? flight.meals.split(',').map(m => m.trim()).filter(Boolean)
         : [];
 
@@ -52,7 +60,6 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                     <div className="fdm-header-top">
                         {flight.airline && <span className="fdm-airline">{flight.airline}</span>}
                         <span className="fdm-fn">{flight.flightNumber}</span>
-                        {flight.cabinClass && <span className="fdm-class">{flight.cabinClass}</span>}
                     </div>
 
                     <div className="fdm-route-hero">
@@ -73,11 +80,6 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                             {fmtDuration(flight.duration) && (
                                 <div className="fdm-duration-badge">{fmtDuration(flight.duration)}</div>
                             )}
-                            {(flight.stopovers || flight.layover) && (
-                                <div className="fdm-via-badge">
-                                    {flight.stopovers ? `via ${flight.stopovers}` : `layover: ${flight.layover}`}
-                                </div>
-                            )}
                         </div>
 
                         <div className="fdm-city-block fdm-city-right">
@@ -90,36 +92,31 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
 
                 {/* ── Body ── */}
                 <div className="fdm-body">
-                    {/* Amenities */}
+
                     <div className="fdm-amenities">
-                        <div className={`fdm-amenity ${flight.wifiAvailable ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {flight.wifiAvailable ? <Wifi size={14} /> : <WifiOff size={14} />}
+                        <div className={`fdm-amenity ${wifiOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
+                            {wifiOn ? <Wifi size={14} /> : <WifiOff size={14} />}
                             <span>Wi-Fi</span>
                         </div>
-                        <div className={`fdm-amenity ${flight.mealsIncluded ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {flight.mealsIncluded ? <Utensils size={14} /> : <UtensilsCrossed size={14} />}
+
+                        <div className={`fdm-amenity ${mealsOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
+                            {mealsOn ? <Utensils size={14} /> : <UtensilsCrossed size={14} />}
                             <span>Meals</span>
                         </div>
-                        <div className={`fdm-amenity ${flight.inFlightEntertainment ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            <MonitorPlay size={14} /><span>Entertainment</span>
+
+                        <div className={`fdm-amenity ${entertainOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
+                            <MonitorPlay size={14} />
+                            <span>Entertainment</span>
                         </div>
-                        <div className={`fdm-amenity ${flight.refundable ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {flight.refundable ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}
+
+                        <div className={`fdm-amenity ${refundOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
+                            {refundOn ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}
                             <span>Refundable</span>
                         </div>
                     </div>
 
-                    {/* Detail cards */}
                     <div className="fdm-grid">
-                        {flight.aircraft && (
-                            <div className="fdm-detail-card">
-                                <div className="fdm-detail-icon"><Plane size={13} /></div>
-                                <div>
-                                    <div className="fdm-detail-label">Aircraft</div>
-                                    <div className="fdm-detail-value">{flight.aircraft}</div>
-                                </div>
-                            </div>
-                        )}
+
                         {flight.seatType && (
                             <div className="fdm-detail-card">
                                 <div className="fdm-detail-icon"><Armchair size={13} /></div>
@@ -129,6 +126,7 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                             </div>
                         )}
+
                         {flight.baggageAllowance && (
                             <div className="fdm-detail-card">
                                 <div className="fdm-detail-icon"><Luggage size={13} /></div>
@@ -138,7 +136,8 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                             </div>
                         )}
-                        {flight.inFlightEntertainment && (
+
+                        {entertainOn && flight.inFlightEntertainment && (
                             <div className="fdm-detail-card">
                                 <div className="fdm-detail-icon"><MonitorPlay size={13} /></div>
                                 <div>
@@ -147,25 +146,8 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                             </div>
                         )}
-                        {flight.layover && (
-                            <div className="fdm-detail-card">
-                                <div className="fdm-detail-icon"><Clock size={13} /></div>
-                                <div>
-                                    <div className="fdm-detail-label">Layover</div>
-                                    <div className="fdm-detail-value">{flight.layover}</div>
-                                </div>
-                            </div>
-                        )}
-                        {flight.stopovers && (
-                            <div className="fdm-detail-card">
-                                <div className="fdm-detail-icon"><Layers size={13} /></div>
-                                <div>
-                                    <div className="fdm-detail-label">Stopovers</div>
-                                    <div className="fdm-detail-value">{flight.stopovers}</div>
-                                </div>
-                            </div>
-                        )}
-                        {flightMeals.length > 0 && (
+
+                        {mealsOn && flightMeals.length > 0 && (
                             <div className="fdm-detail-card fdm-detail-card-wide">
                                 <div className="fdm-detail-icon"><Utensils size={13} /></div>
                                 <div>
@@ -178,32 +160,12 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                             </div>
                         )}
+
                     </div>
                 </div>
 
                 {/* ── Footer ── */}
-                <div className="fdm-footer">
-                    <div className="fdm-footer-left">
-                        <div className="fdm-seats-wrap">
-                            <Users size={13} />
-                            <span className={flight.seatsAvailable <= 10 ? 'fdm-seats-low' : ''}>
-                                {flight.seatsAvailable} seats left
-                            </span>
-                        </div>
-                    </div>
-                    <div className="fdm-footer-right">
-                        <div className="fdm-price-block">
-                            <div className="fdm-price">PKR {(flight.price ?? 0).toLocaleString()}</div>
-                            <div className="fdm-price-lbl">per seat</div>
-                        </div>
-                        {flight.seatsAvailable === 0
-                            ? <div className="fdm-sold-out">Sold Out</div>
-                            : <button className="fdm-book-btn" onClick={handleBook}>
-                                <Plane size={14} /> Book Now
-                            </button>
-                        }
-                    </div>
-                </div>
+                <Footer />
             </div>
         </div>
     );

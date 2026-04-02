@@ -8,7 +8,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import Flights from "./pages/Flights";
-import Bookings from "./admin/pages/Bookings";
+import Bookings from "./pages/Bookings";
 import AdminPanel from "./admin/pages/AdminPanel";
 import Profile from "./pages/Profile";
 

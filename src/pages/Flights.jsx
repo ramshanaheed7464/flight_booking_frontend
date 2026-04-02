@@ -6,10 +6,12 @@ import { getAllCities } from '../api/LocationApi';
 import { DEFAULT_NATIONALITIES } from './validation';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
-import FlightCard from './FlightCard';
-import SortDropdown from '../components/SortDropdown';
+import FlightCard from '../components/FlightCard';
+import CustomSelect from '../components/CustomSelect';
+import { SORT_OPTIONS } from '../components/SortDropdown';
 import CityAutocomplete from '../components/CityAutoComplete';
 import './Flights.css';
+
 export default function Flights() {
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -170,7 +172,11 @@ export default function Flights() {
                                 </span>
                                 <div className="fl-sort-wrap">
                                     <span className="fl-sort-label">Sort</span>
-                                    <SortDropdown value={sortBy} onChange={setSortBy} />
+                                    <CustomSelect
+                                        value={sortBy}
+                                        onChange={setSortBy}
+                                        options={SORT_OPTIONS}
+                                    />
                                 </div>
                             </div>
 

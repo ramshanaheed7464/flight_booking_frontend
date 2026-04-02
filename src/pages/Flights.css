@@ -273,8 +273,8 @@
 .fl-sort-menu {
     position: absolute;
     top: calc(100% + 6px);
-    right: 0;
-    background: var(--color-bg-card);
+    left: 0;
+    background: var(--color-bg-menu);
     border: 1px solid var(--color-border-gold);
     border-radius: var(--radius-lg);
     padding: 0.35rem;
@@ -284,6 +284,35 @@
     z-index: 50;
     min-width: 155px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    max-height: calc(6 * 34px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Align menu to right edge of trigger */
+.fl-sort-menu--right {
+    left: auto;
+    right: 0;
+}
+
+/* Stretch menu to full trigger width (modal fields) */
+.fl-sort-menu--full {
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-width: unset;
+}
+
+/* Open upward when not enough space below */
+.fl-sort-menu--up {
+    top: auto;
+    bottom: calc(100% + 6px);
+}
+
+/* Full-width trigger button (modal fields) */
+.fl-sort-btn--full {
+    width: 100%;
+    justify-content: space-between;
 }
 
 .fl-sort-option {
@@ -304,7 +333,7 @@
 }
 
 .fl-sort-option:hover {
-    background: var(--color-bg-card-hover);
+    background: var(--color-bg-menu-hover);
 }
 
 .fl-sort-option.active {
@@ -1065,6 +1094,34 @@
     color: var(--color-text-faint);
     font-style: italic;
     text-align: center;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   CUSTOM SELECT WRAPPER
+   ══════════════════════════════════════════════════════════════════ */
+
+.fl-select-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.fl-select-wrap--full {
+    display: block;
+    width: 100%;
+}
+
+/* Chevron spacing — always pushed to the far right */
+.fl-sort-btn-chevron {
+    opacity: 0.5;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Check icon in selected option */
+.fl-sort-option-check {
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════

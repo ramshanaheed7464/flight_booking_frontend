@@ -17,6 +17,8 @@
     --color-bg: #08080c;
     --color-bg-card: rgba(255, 255, 255, 0.03);
     --color-bg-card-hover: rgba(255, 255, 255, 0.05);
+    --color-bg-menu: rgb(15, 15, 15);
+    --color-bg-menu-hover: rgba(255, 255, 255, 0.1);
     --color-bg-input: rgba(255, 255, 255, 0.04);
     --color-bg-input-focus: rgba(255, 255, 255, 0.06);
 

@@ -1,0 +1,280 @@
+.ap-stat-icon--gold {
+    background: rgba(201, 163, 84, 0.10);
+}
+
+.ap-stat-icon--gold svg {
+    color: var(--color-gold);
+}
+
+.ap-stat-icon--green {
+    background: rgba(76, 175, 136, 0.10);
+}
+
+.ap-stat-icon--green svg {
+    color: var(--color-success);
+}
+
+.ap-stat-icon--blue {
+    background: rgba(123, 140, 222, 0.10);
+}
+
+.ap-stat-icon--blue svg {
+    color: #7b8cde;
+}
+
+.ap-stat-icon--danger {
+    background: rgba(224, 95, 95, 0.10);
+}
+
+.ap-stat-icon--danger svg {
+    color: var(--color-danger);
+}
+
+.ap-stat-icon--revenue {
+    background: rgba(201, 163, 84, 0.08);
+}
+
+/* PKR text inside the revenue stat icon */
+.ap-stat-icon-pkr {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-gold);
+}
+
+/* Larger number for revenue card */
+.ap-stat-num--lg {
+    font-size: 1.3rem;
+}
+
+/* ── Search input wrapper (positions the icon) ── */
+.ap-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ap-search-wrap svg {
+    position: absolute;
+    left: 0.7rem;
+    color: var(--color-text-ghost);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.ap-loading svg,
+.ap-error svg {
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* ── Flights table: seats cell colour states ── */
+.ap-seats--soldout {
+    color: var(--color-danger);
+}
+
+.ap-seats--low {
+    color: var(--color-warning-muted);
+}
+
+.ap-seats--ok {
+    color: var(--color-text-muted);
+}
+
+/* ── Flights table: price cell ── */
+.ap-table-price {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-gold);
+}
+
+/* ── Bookings table: user cell ── */
+.ap-user-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--color-text);
+    line-height: 1.3;
+}
+
+.ap-user-email {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-text-faint);
+    line-height: 1.3;
+}
+
+/* ── Bookings table: pax count cell ── */
+.ap-table-pax {
+    color: var(--color-text-muted);
+}
+
+/* ── Bookings table: trip type cell ── */
+.ap-trip-type {
+    font-size: 0.7rem;
+    color: var(--color-text-dim);
+    text-transform: capitalize;
+}
+
+/* ── Bookings table: expand chevron cell ── */
+.ap-expand-chevron {
+    color: var(--color-text-ghost);
+    display: flex;
+    align-items: center;
+}
+
+/* ── Passenger expansion (expanded table row) ── */
+.ap-pax-expansion-cell {
+    padding: 0 !important;
+    background: rgba(201, 163, 84, 0.03);
+    border-bottom: 1px solid rgba(201, 163, 84, 0.12);
+}
+
+.ap-pax-expansion-inner {
+    padding: 1rem 1.5rem;
+}
+
+.ap-pax-expansion-label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-text-ghost);
+    margin-bottom: 0.75rem;
+}
+
+.ap-pax-empty {
+    font-size: 0.8rem;
+    color: var(--color-text-faint);
+}
+
+.ap-pax-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ap-pax-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.6rem 1.2rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.ap-pax-heading {
+    grid-column: 1 / -1;
+    font-size: 0.72rem;
+    color: var(--color-gold);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.ap-pax-field-label {
+    font-size: 0.63rem;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.ap-pax-field-val {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.ap-pax-field-val--empty {
+    color: var(--color-text-faint);
+}
+
+/* ── Dashboard: recent bookings section header ── */
+.ap-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 0.85rem;
+}
+
+.ap-section-label {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+}
+
+.ap-section-link {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--color-gold);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.ap-section-link:hover {
+    opacity: 0.75;
+}
+
+/* ── Dashboard: user email in recent bookings table ── */
+.ap-table-user-email {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+/* ── Dashboard: pax count in recent bookings table ── */
+.ap-table-pax-sm {
+    color: var(--color-text-muted);
+}
+
+/* ── Bookings table: date cell primary line ── */
+.ap-date-main {
+    font-size: 0.74rem;
+}
+
+/* ── Bookings table: date cell time line ── */
+.ap-date-time {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--color-text-faint);
+    line-height: 1.3;
+}
+
+/* ── Bookings table: date cell wrapper ── */
+.ap-date-cell {
+    line-height: 1.3;
+}
+
+/* ── Bookings table: user cell wrapper ── */
+.ap-user-cell {
+    line-height: 1.3;
+}
+
+/* ── Bookings table: clickable row ── */
+.ap-table-row--clickable {
+    cursor: pointer;
+}
+
+/* ── Bookings filter select (action bar) ── */
+.ap-status-filter {
+    padding: 0.55rem 0.9rem;
+    min-width: 130px;
+}
+
+/* ── Search input with left padding for icon ── */
+.ap-search-input--padded {
+    padding-left: 2.1rem;
+}

@@ -93,11 +93,64 @@ export function validateArrival(departure, arrival) {
     return '';
 }
 
+export function validateAirline(val) {
+    if (!val.trim()) return 'Airline is required.';
+    if (val.trim().length < 2) return 'Airline must be at least 2 characters.';
+    if (val.trim().length > 60) return 'Airline must be 60 characters or fewer.';
+    return '';
+}
+
+export function validateBaggageAllowance(val) {
+    if (!val.trim()) return 'Baggage allowance is required.';
+    if (val.trim().length < 2) return 'Baggage allowance must be at least 2 characters.';
+    if (val.trim().length > 30) return 'Baggage allowance must be 30 characters or fewer.';
+    return '';
+}
+
+export function validateWifiAvailable(val) {
+    if (val === '') return 'Please specify if Wi-Fi is available.';
+    if (val !== 'true' && val !== 'false') return 'Please select Wifi availability from the given options.';
+    return '';
+}
+
+export function validateInflightEntertainment(val) {
+    if (!val.trim()) return 'In-flight entertainment info is required.';
+    if (val.trim().length < 2) return 'In-flight entertainment info must be at least 2 characters.';
+    if (val.trim().length > 60) return 'In-flight entertainment info must be 60 characters or fewer.';
+    return '';
+}
+
+// export function validateCabinClass(val) {
+//     if (!val.trim()) return 'Cabin class is required.';
+//     if (val.trim().length < 2) return 'Cabin class must be at least 2 characters.';
+//     if (val.trim().length > 30) return 'Cabin class must be 30 characters or fewer.';
+//     return '';
+// }
+
+export function validatemealsIncluded(val) {
+    if (val === '') return 'Please specify if meals are included.';
+    if (val !== 'true' && val !== 'false') return 'Please select meal inclusion from the given options.';
+    return '';
+}
+
+export function validateRefundable(val) {
+    if (val === '') return 'Please specify if the flight is refundable.';
+    if (val !== 'true' && val !== 'false') return 'Please select refundable option from the given options.';
+    return '';
+}
+
 export function validateSeats(val) {
     const n = parseInt(val);
     if (!val && val !== 0) return 'Seats is required.';
     if (isNaN(n) || n < 1) return 'Seats must be at least 1.';
     if (n > 1000) return 'Seats cannot exceed 1000.';
+    return '';
+}
+
+export function validateSeatType(val) {
+    if (!val.trim()) return 'Seat type is required.';
+    if (val.trim().length < 2) return 'Seat type must be at least 2 characters.';
+    if (val.trim().length > 30) return 'Seat type must be 30 characters or fewer.';
     return '';
 }
 

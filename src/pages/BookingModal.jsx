@@ -6,6 +6,7 @@ import {
 import { createBooking } from '../api/bookingApi';
 import { validatePassenger } from './validation';
 import PassengerForm from './PassengerForm';
+import CustomSelect from '../components/CustomSelect';
 
 const emptyPassenger = () => ({
     fullName: '', passportNumber: '', nationality: '',
@@ -34,6 +35,23 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
         f.source === flight.destination &&
         f.destination === flight.source
     );
+
+    const passengerOptions = [1, 2, 3, 4, 5, 6].map(n => ({
+        value: n,
+        label: `${n} Passenger${n > 1 ? 's' : ''}`,
+        disabled: n > flight.seatsAvailable,
+    }));
+
+    const returnFlightOptions = [
+        { value: '', label: 'Select return flight…', disabled: true },
+        ...(returnOptions.length === 0
+            ? [{ value: '__none__', label: 'No return flights available', disabled: true }]
+            : returnOptions.map(f => ({
+                value: String(f.id),
+                label: `${f.source} → ${f.destination} · ${f.flightNumber} · PKR ${f.price}`,
+            }))
+        ),
+    ];
 
     const handlePassengerCount = (n) => {
         setPassengers(n);
@@ -128,17 +146,12 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
                             <label className="modal-label">
                                 <span className="modal-label-icon"><Users size={11} /></span> Passengers
                             </label>
-                            <select
-                                className="modal-select"
+                            <CustomSelect
                                 value={passengers}
-                                onChange={e => handlePassengerCount(Number(e.target.value))}
-                            >
-                                {[1, 2, 3, 4, 5, 6].map(n => (
-                                    <option key={n} value={n} disabled={n > flight.seatsAvailable}>
-                                        {n} Passenger{n > 1 ? 's' : ''}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={val => handlePassengerCount(Number(val))}
+                                options={passengerOptions}
+                                fullWidth
+                            />
                         </div>
 
                         {tripType === 'ROUND_TRIP' && (
@@ -146,21 +159,13 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
                                 <label className="modal-label">
                                     <span className="modal-label-icon"><RotateCcw size={11} /></span> Return Flight
                                 </label>
-                                <select
-                                    className="modal-select"
+                                <CustomSelect
                                     value={returnFlightId}
-                                    onChange={e => setReturnFlightId(e.target.value)}
-                                >
-                                    <option value="">Select return flight…</option>
-                                    {returnOptions.length === 0
-                                        ? <option disabled>No return flights available</option>
-                                        : returnOptions.map(f => (
-                                            <option key={f.id} value={f.id}>
-                                                {f.source} → {f.destination} · {f.flightNumber} · PKR {f.price}
-                                            </option>
-                                        ))
-                                    }
-                                </select>
+                                    onChange={val => setReturnFlightId(val)}
+                                    options={returnFlightOptions}
+                                    placeholder="Select return flight…"
+                                    fullWidth
+                                />
                             </div>
                         )}
 

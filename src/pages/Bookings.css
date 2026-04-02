@@ -1,4 +1,4 @@
-@import '../../styles/palette.css';
+@import '../styles/palette.css';
 
 /* ── Page layout ── */
 .bk-root {
@@ -529,4 +529,384 @@
     font-size: 0.78rem;
     color: rgba(255, 255, 255, 0.7);
     font-family: 'DM Mono', monospace;
+}
+
+/* ── View Details button ── */
+.bc-detail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid rgba(201, 163, 84, 0.3);
+    color: rgba(201, 163, 84, 0.8);
+    background: transparent;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.bc-detail-btn:hover {
+    background: rgba(201, 163, 84, 0.08);
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+}
+
+.bc-detail-sm {
+    font-size: 0.68rem !important;
+    padding: 0.35rem 0.75rem !important;
+}
+
+/* ─── Booking Detail Modal ─────────────────────────────────── */
+.bd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.bd-modal {
+    background: #0b0b10;
+    border: 1px solid rgba(201, 163, 84, 0.22);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 163, 84, 0.2) transparent;
+}
+
+.bd-modal::-webkit-scrollbar {
+    width: 4px;
+}
+
+.bd-modal::-webkit-scrollbar-thumb {
+    background: rgba(201, 163, 84, 0.2);
+    border-radius: 4px;
+}
+
+.bd-close {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.18s;
+    z-index: 2;
+}
+
+.bd-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+}
+
+/* Header */
+.bd-header {
+    padding: 2rem 2rem 1.5rem;
+    background: linear-gradient(160deg, rgba(201, 163, 84, 0.06) 0%, transparent 60%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.bd-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.bd-booking-id {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-text-dim);
+    letter-spacing: 0.06em;
+}
+
+.bd-status {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid;
+}
+
+/* Route hero */
+.bd-route-hero {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bd-city-block {
+    flex-shrink: 0;
+    min-width: 90px;
+}
+
+.bd-city-right {
+    text-align: right;
+}
+
+.bd-city-code {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.bd-city-label {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.2rem;
+}
+
+.bd-city-time {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-gold);
+    margin-top: 0.3rem;
+}
+
+.bd-city-date {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 0.15rem;
+}
+
+.bd-route-mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.bd-route-line {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.bd-route-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 2px solid rgba(201, 163, 84, 0.5);
+    flex-shrink: 0;
+}
+
+.bd-route-track {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201, 163, 84, 0.3), rgba(201, 163, 84, 0.6), rgba(201, 163, 84, 0.3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bd-plane-icon {
+    color: var(--color-gold);
+    background: #0b0b10;
+    padding: 0 4px;
+}
+
+.bd-flight-num {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.08em;
+}
+
+/* Info row */
+.bd-info-row {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bd-info-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bd-info-item:last-child {
+    border-right: none;
+}
+
+.bd-info-lbl {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--color-text-ghost);
+}
+
+.bd-info-val {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* Passenger section */
+.bd-pax-section {
+    padding: 1.25rem 2rem;
+}
+
+.bd-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-ghost);
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.bd-pax-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.bd-pax-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    transition: border-color 0.18s;
+}
+
+.bd-pax-card:hover {
+    border-color: rgba(201, 163, 84, 0.15);
+}
+
+.bd-pax-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--color-gold);
+    font-weight: 600;
+    margin-bottom: 0.65rem;
+}
+
+.bd-pax-name {
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 400;
+}
+
+.bd-pax-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.6rem 1rem;
+}
+
+.bd-pax-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.bd-pax-lbl {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-family: var(--font-body);
+}
+
+.bd-pax-val {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.72);
+    font-family: var(--font-mono);
+}
+
+/* Footer */
+.bd-footer {
+    padding: 1rem 2rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bd-close-btn {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--color-text-faint);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    padding: 0.55rem 1.4rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.bd-close-btn:hover {
+    color: var(--color-text);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Remove old accordion styles now replaced by modal ── */
+.bc-pax-section,
+.bc-pax-toggle,
+.bc-pax-list,
+.bc-pax-card,
+.bc-pax-title,
+.bc-pax-name,
+.bc-pax-grid,
+.bc-pax-field,
+.bc-pax-lbl,
+.bc-pax-val {
+    display: none !important;
 }
