@@ -16,10 +16,10 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
 
     const toBool = v => v === true || v === 1 || v === '1' || String(v).toLowerCase() === 'true';
 
-    const wifiOn = toBool(flight.wifiAvailable);          // @JsonProperty("wifiAvailable")
-    const mealsOn = toBool(flight.mealsIncluded);          // field: mealsIncluded
-    const entertainOn = toBool(flight.entertainmentAvailable); // @JsonProperty("entertainmentAvailable")
-    const refundOn = toBool(flight.refundable);             // field: refundable
+    const wifiOn = toBool(flight.wifiAvailable);
+    const mealsOn = toBool(flight.mealsIncluded);
+    const entertainOn = toBool(flight.entertainmentAvailable);
+    const refundOn = toBool(flight.refundable);
 
     const flightMeals = mealsOn && flight.meals
         ? flight.meals.split(',').map(m => m.trim()).filter(Boolean)
@@ -165,7 +165,28 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                 </div>
 
                 {/* ── Footer ── */}
-                <Footer />
+                <div className="fdm-footer">
+                    <div className="fdm-footer-left">
+                        <div className="fdm-seats-wrap">
+                            <Users size={13} />
+                            <span className={flight.seatsAvailable <= 10 ? 'fdm-seats-low' : ''}>
+                                {flight.seatsAvailable} seats left
+                            </span>
+                        </div>
+                    </div>
+                    <div className="fdm-footer-right">
+                        <div className="fdm-price-block">
+                            <div className="fdm-price">PKR {(flight.price ?? 0).toLocaleString()}</div>
+                            <div className="fdm-price-lbl">per seat</div>
+                        </div>
+                        {flight.seatsAvailable === 0
+                            ? <div className="fdm-sold-out">Sold Out</div>
+                            : <button className="fdm-book-btn" onClick={handleBook}>
+                                <Plane size={14} /> Book Now
+                            </button>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );

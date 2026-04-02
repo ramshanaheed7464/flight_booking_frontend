@@ -77,10 +77,14 @@ export default function PassengerForm({ index, data, onChange, errors, nationali
                 {field('phone', 'Phone Number', 'tel', { placeholder: getPhonePlaceholder(data.nationality), icon: <Phone size={11} /> })}
             </div>
 
-            <div className="modal-passenger-section-label"><Utensils size={10} /> Preferences</div>
-            <div className="modal-passenger-grid">
-                {field('mealPreference', 'Meal Preference', 'select', { options: mealPreferences, fullWidth: true, icon: <Utensils size={11} />, maxItems: 5 })}
-            </div>
+            {mealPreferences && mealPreferences.length > 0 && (
+                <>
+                    <div className="modal-passenger-section-label"><Utensils size={10} /> Preferences</div>
+                    <div className="modal-passenger-grid">
+                        {field('mealPreference', 'Meal Preference', 'select', { options: mealPreferences, fullWidth: true, icon: <Utensils size={11} />, maxItems: 5 })}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

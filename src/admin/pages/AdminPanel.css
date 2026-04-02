@@ -589,6 +589,20 @@
     outline: none;
     transition: border-color var(--transition-base), background var(--transition-base);
     box-sizing: border-box;
+    color-scheme: dark;
+}
+
+/* ── Autofill — browser injects white bg; override with inset shadow trick ── */
+.ap-form-input:-webkit-autofill,
+.ap-form-input:-webkit-autofill:hover,
+.ap-form-input:-webkit-autofill:focus,
+.ap-form-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 9999px #0e0e14 inset !important;
+    box-shadow: 0 0 0 9999px #0e0e14 inset !important;
+    -webkit-text-fill-color: var(--color-text) !important;
+    caret-color: var(--color-text);
+    border-color: var(--color-border-input) !important;
+    transition: background-color 99999s ease-in-out 0s;
 }
 
 /* ── Select dropdowns — force dark theme ── */
@@ -644,10 +658,6 @@ input[type="number"].ap-form-input::-webkit-outer-spin-button {
 }
 
 /* ── Datetime-local inputs ── */
-input[type="datetime-local"].ap-form-input {
-    color-scheme: dark;
-}
-
 input[type="datetime-local"].ap-form-input::-webkit-calendar-picker-indicator {
     filter: invert(0.7) sepia(1) saturate(2) hue-rotate(5deg);
     cursor: pointer;
