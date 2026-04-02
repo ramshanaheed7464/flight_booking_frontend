@@ -13,7 +13,9 @@ import {
 const EMPTY_FLIGHT = {
     flightNumber: '', source: '', destination: '',
     departureTime: '', arrivalTime: '', seatsAvailable: '', price: '',
-    meals: '', airline: '', wifiAvailable: '', inflightEntertainment: '', layover: '', stopovers: '', baggageAllowance: '',
+    meals: '', airline: '', wifiAvailable: '', inflightEntertainment: '',
+    // layover: '', stopovers: '', 
+    // baggageAllowance: '',
     seatType: '', mealsIncluded: '', refundable: '',
 };
 
@@ -33,8 +35,8 @@ export function FlightModal({ flight, onClose, onSaved }) {
         wifiAvailable: flight.wifiAvailable !== undefined ? String(flight.wifiAvailable) : '',
         inflightEntertainment: flight.inFlightEntertainment ?? '',
         // cabinClass: flight.cabinClass ?? '',
-        layover: flight.layover ?? '',
-        stopovers: flight.stopovers ?? '',
+        // layover: flight.layover ?? '',
+        // stopovers: flight.stopovers ?? '',
         baggageAllowance: flight.baggageAllowance ?? '',
         seatType: flight.seatType ?? '',
         mealsIncluded: flight.mealsIncluded !== undefined ? String(flight.mealsIncluded) : '',
@@ -97,8 +99,8 @@ export function FlightModal({ flight, onClose, onSaved }) {
                 refundable: form.refundable === 'true',
                 inFlightEntertainment: form.inflightEntertainment?.trim() || null,
                 // cabinClass: form.cabinClass?.trim() || null,
-                layover: form.layover?.trim() || null,
-                stopovers: form.stopovers?.trim() || null,
+                // layover: form.layover?.trim() || null,
+                // stopovers: form.stopovers?.trim() || null,
                 baggageAllowance: form.baggageAllowance?.trim() || null,
                 source: form.source.trim(),
                 destination: form.destination.trim(),

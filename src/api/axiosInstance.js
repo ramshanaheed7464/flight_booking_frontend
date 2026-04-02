@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-    // Never send the token to auth endpoints (login / register)
     const isAuthEndpoint = config.url?.startsWith('/auth/');
     if (!isAuthEndpoint) {
         const token = localStorage.getItem('token');
