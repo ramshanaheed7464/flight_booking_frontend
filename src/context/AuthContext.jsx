@@ -8,14 +8,18 @@ export const AuthProvider = ({ children }) => {
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        keycloak.init({ onLoad: 'check-sso', silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html' })
+        keycloak.init({
+            onLoad: 'check-sso',
+            silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+            checkLoginIframe: false
+        })
             .then((authenticated) => {
                 if (authenticated) {
                     const tokenParsed = keycloak.tokenParsed;
                     setUser({
                         name: tokenParsed?.name || tokenParsed?.preferred_username,
                         email: tokenParsed?.email,
-                        role: tokenParsed?.realm_access?.roles?.includes('ADMIN') ? 'ADMIN' : 'USER'
+                        role: tokenParsed?.realm_access?.roles?.includes('admin') ? 'ADMIN' : 'USER'
                     });
                 }
                 setInitialized(true);
@@ -31,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     const getToken = () => keycloak.token;
 
-    if (!initialized) return null; // or a loading spinner
+    if (!initialized) return null;
 
     return (
         <AuthContext.Provider value={{ user, login, logout, getToken }}>
