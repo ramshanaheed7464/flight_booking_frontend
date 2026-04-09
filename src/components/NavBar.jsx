@@ -1,15 +1,13 @@
 import { useContext } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Plane, LogOut, UserCircle } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import './NavBar.css';
 
 export default function NavBar() {
-    const { user, logout } = useContext(AuthContext);
-    const navigate = useNavigate();
+    const { user, login, logout } = useContext(AuthContext);
     const location = useLocation();
 
-    const handleLogout = () => { logout(); navigate('/login'); };
     const isActive = (path) => location.pathname === path;
 
     return (
@@ -24,12 +22,11 @@ export default function NavBar() {
                 )}
                 {!user ? (
                     <>
-                        <Link to="/login" className={`nav-link ${isActive('/login') ? 'active' : ''}`}>Login</Link>
-                        <Link to="/register" className={`nav-link ${isActive('/register') ? 'active' : ''}`}>Register</Link>
+                        <button className="nav-link" onClick={login}>Login</button>
+                        <button className="nav-link" onClick={login}>Register</button>
                     </>
                 ) : (
                     <>
-                        {/* Profile button */}
                         <Link
                             to="/profile"
                             className="nav-profile-btn"
@@ -50,10 +47,10 @@ export default function NavBar() {
                             }}
                         >
                             <UserCircle size={15} strokeWidth={1.8} />
-                            {user.name ? user.name.split(' ')[0] : user.email.split('@')[0]}
+                            {user.name ? user.name.split(' ')[0] : user.email?.split('@')[0]}
                         </Link>
 
-                        <button className="nav-btn" onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <button className="nav-btn" onClick={logout} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                             <LogOut size={13} strokeWidth={2} />
                             Logout
                         </button>

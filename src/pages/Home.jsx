@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import './Home.css';
 
 export default function Home() {
-    const { user } = useContext(AuthContext);
+    const { user, login } = useContext(AuthContext);
 
     return (
         <div className="home-root">
@@ -18,7 +18,11 @@ export default function Home() {
             </p>
             <div className="home-actions">
                 <Link to="/flights" className="home-cta primary">Explore Flights</Link>
-                {!user && <Link to="/register" className="home-cta secondary">Create Account</Link>}
+                {!user && (
+                    <button className="home-cta secondary" onClick={login}>
+                        Create Account
+                    </button>
+                )}
                 {user && <Link to="/bookings" className="home-cta secondary">My Bookings</Link>}
             </div>
             <div className="home-stats">
