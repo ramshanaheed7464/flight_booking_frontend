@@ -1,36 +1,40 @@
 import { createContext, useState, useEffect } from 'react';
-import { login as apiLogin, register as apiRegister } from '../api/authApi';
+import keycloak from '../keycloak';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) setUser(JSON.parse(storedUser));
+        keycloak.init({ onLoad: 'check-sso', silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html' })
+            .then((authenticated) => {
+                if (authenticated) {
+                    const tokenParsed = keycloak.tokenParsed;
+                    setUser({
+                        name: tokenParsed?.name || tokenParsed?.preferred_username,
+                        email: tokenParsed?.email,
+                        role: tokenParsed?.realm_access?.roles?.includes('ADMIN') ? 'ADMIN' : 'USER'
+                    });
+                }
+                setInitialized(true);
+            });
     }, []);
 
-    const login = async (data) => {
-        const res = await apiLogin(data);
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        setUser(res.data.user);
-    };
-
-    const register = async (data) => {
-        const res = await apiRegister(data);
-        return res.data;
-    };
+    const login = () => keycloak.login();
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        keycloak.logout({ redirectUri: window.location.origin });
         setUser(null);
     };
 
+    const getToken = () => keycloak.token;
+
+    if (!initialized) return null; // or a loading spinner
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, getToken }}>
             {children}
         </AuthContext.Provider>
     );
