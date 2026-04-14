@@ -19,9 +19,14 @@ export default function Home() {
             <div className="home-actions">
                 <Link to="/flights" className="home-cta primary">Explore Flights</Link>
                 {!user && (
-                    <button className="home-cta secondary" onClick={login}>
-                        Create Account
-                    </button>
+                    <>
+                        <button className="home-cta secondary" onClick={login}>
+                            Login
+                        </button>
+                        <Link to="/forgot-password" className="home-cta secondary">
+                            Forgot Password?
+                        </Link>
+                    </>
                 )}
                 {user && <Link to="/bookings" className="home-cta secondary">My Bookings</Link>}
             </div>

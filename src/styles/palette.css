@@ -33,6 +33,7 @@
 
     /* ── Text colors ── */
     --color-text: #ffffff;
+    --color-text-secondary: #08080c;
     --color-text-muted: rgba(255, 255, 255, 0.50);
     --color-text-dim: rgba(255, 255, 255, 0.35);
     --color-text-faint: rgba(255, 255, 255, 0.25);

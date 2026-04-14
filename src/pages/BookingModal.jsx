@@ -80,21 +80,30 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
     };
 
     const handleBook = async () => {
-        if (!validateStep2()) return;
+        if (!validateStep2()) {
+            console.log('passengerForms:', passengerForms);
+            console.log('Validation failed:', formErrors);
+            return;
+        }
         setLoading(true);
         setError('');
         try {
             const body = { flightId: flight.id, tripType, passengers, passengerDetails: passengerForms };
             if (tripType === 'ROUND_TRIP') body.returnFlightId = Number(returnFlightId);
-            await createBooking(body);
+            console.log('Sending booking:', body);
+            const res = await createBooking(body);
+            console.log('Booking response:', res);
             setSuccess(true);
             setTimeout(() => { onBooked(); onClose(); }, 1800);
         } catch (e) {
+            console.log('Booking error:', e);
+            console.log('Booking error response:', e.response);
             setError(e.response?.data || 'Booking failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>

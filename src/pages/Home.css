@@ -117,6 +117,8 @@
 .home-cta.secondary {
     border: 1px solid var(--color-border);
     color: var(--color-text-muted);
+    background: transparent;
+    cursor: pointer;
 }
 
 .home-cta.secondary:hover {

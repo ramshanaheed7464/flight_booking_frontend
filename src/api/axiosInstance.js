@@ -8,11 +8,15 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(async (config) => {
-    if (keycloak.isTokenExpired(30)) {
-        await keycloak.updateToken(30);
-    }
-    if (keycloak.token) {
-        config.headers.Authorization = `Bearer ${keycloak.token}`;
+    if (keycloak.authenticated) {
+        try {
+            await keycloak.updateToken(30);
+        } catch (e) {
+            console.error('Token refresh failed: ', e);
+        }
+        if (keycloak.token) {
+            config.headers.Authorization = `Bearer ${keycloak.token}`;
+        }
     }
     return config;
 });

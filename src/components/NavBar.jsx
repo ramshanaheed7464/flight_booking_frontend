@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Plane, LogOut, UserCircle } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import './NavBar.css';
+import { register } from '../api/authApi';
 
 export default function NavBar() {
     const { user, login, logout } = useContext(AuthContext);
@@ -23,7 +24,7 @@ export default function NavBar() {
                 {!user ? (
                     <>
                         <button className="nav-link" onClick={login}>Login</button>
-                        <button className="nav-link" onClick={login}>Register</button>
+                        <button className="nav-link" onClick={register}>Register</button>
                     </>
                 ) : (
                     <>

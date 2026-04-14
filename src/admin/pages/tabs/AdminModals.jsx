@@ -7,7 +7,9 @@ import {
     validateBaggageAllowance, validateWifiAvailable,
     validateInflightEntertainment,
     validatemealsIncluded, validateRefundable, validateSeatType,
-    validateAirline
+    validateAirline,
+    validateMeals,
+    validateEntertainmentDetails
 } from '../../../pages/validation';
 
 const EMPTY_FLIGHT = {
@@ -50,7 +52,12 @@ export function FlightModal({ flight, onClose, onSaved }) {
 
     const handle = e => {
         const { name, value } = e.target;
-        setForm(f => ({ ...f, [name]: value }));
+        setForm(f => {
+            const updated = { ...f, [name]: value };
+            if (name === 'mealsIncluded' && value !== 'true') updated.meals = '';
+            if (name === 'isEntertainmentAvailable' && value !== 'true') updated.inflightEntertainment = '';
+            return updated;
+        });
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
@@ -65,8 +72,10 @@ export function FlightModal({ flight, onClose, onSaved }) {
         baggageAllowance: validateBaggageAllowance(form.baggageAllowance),
         wifiAvailable: validateWifiAvailable(form.wifiAvailable),
         inflightEntertainment: validateInflightEntertainment(form.inflightEntertainment),
+        entertainmentDetails: validateEntertainmentDetails(form.inflightEntertainment, form.isEntertainmentAvailable),
         // cabinClass: validateCabinClass(form.cabinClass),
         mealsIncluded: validatemealsIncluded(form.mealsIncluded),
+        meals: validateMeals(form.meals, form.mealsIncluded),
         refundable: validateRefundable(form.refundable),
         seatsAvailable: validateSeats(form.seatsAvailable),
         seatType: validateSeatType(form.seatType),
@@ -177,14 +186,16 @@ export function FlightModal({ flight, onClose, onSaved }) {
                             <option value="false">No</option>
                         </select>
                     </Field>
-                    <Field label="In-Flight Entertainment" error={errors.inflightEntertainment}>
-                        <input className="ap-form-input"
+                    <Field label="In-Flight Entertainment" error={errors.entertainmentDetails}>
+                        <input
+                            className={`ap-form-input${errors.entertainmentDetails ? ' ap-input-err' : ''}`}
                             name="inflightEntertainment"
                             placeholder="e.g. Movies, TV Shows, Music"
                             value={form.inflightEntertainment}
                             onChange={handle}
                             disabled={form.isEntertainmentAvailable !== 'true'}
-                            style={form.isEntertainmentAvailable === 'true' ? {} : { backgroundColor: 'rgba(255,255,255,0.05)', cursor: 'not-allowed' }} />
+                            style={form.isEntertainmentAvailable === 'true' ? {} : { backgroundColor: 'rgba(255,255,255,0.05)', cursor: 'not-allowed' }}
+                        />
                     </Field>
                 </div>
 
@@ -231,14 +242,14 @@ export function FlightModal({ flight, onClose, onSaved }) {
                         </span>
                     </label>
                     <input
-                        className="ap-form-input"
-                        name="meals"
+                        className={`ap-form-input${errors.meals ? ' ap-input-err' : ''}`} name="meals"
                         placeholder="e.g. Standard, Vegetarian, Halal, Vegan"
                         value={form.meals}
                         onChange={handle}
                         disabled={form.mealsIncluded !== 'true'}
                         style={form.mealsIncluded === 'true' ? {} : { backgroundColor: 'rgba(255,255,255,0.05)', cursor: 'not-allowed' }}
                     />
+                    {errors.meals && <span className="ap-field-err">{errors.meals}</span>}
                 </div>
 
                 <div className="ap-form-row">

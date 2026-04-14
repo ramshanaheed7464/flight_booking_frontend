@@ -12,7 +12,7 @@ import {
     ArrowLeft,
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import { getProfile, updateProfile } from '../api/userApi';
+import { getProfile, updateProfile, changePassword } from '../api/userApi';
 import { validateName, validatePassword, validatePasswordStrength, validateConfirmPassword } from './validation';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
@@ -35,13 +35,11 @@ export default function Profile() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Name form
     const [name, setName] = useState('');
     const [nameLoading, setNameLoading] = useState(false);
     const [nameSuccess, setNameSuccess] = useState('');
     const [nameError, setNameError] = useState('');
 
-    // Password form
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -75,7 +73,6 @@ export default function Profile() {
         try {
             const res = await updateProfile({ name: name.trim() });
             setProfile(res.data);
-            // Update localStorage so NavBar reflects the change immediately
             const stored = JSON.parse(localStorage.getItem('user') || '{}');
             localStorage.setItem('user', JSON.stringify({ ...stored, name: res.data.name }));
             setNameSuccess('Name updated successfully.');
@@ -98,12 +95,11 @@ export default function Profile() {
         if (confirmErr) { setPwError(confirmErr); return; }
         setPwLoading(true);
         try {
-            await updateProfile({ currentPassword, newPassword });
+            await changePassword({ currentPassword, newPassword });
             setPwSuccess('Password changed successfully. Please log in again.');
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
-            // Force re-login after password change
             setTimeout(() => { logout(); navigate('/login'); }, 2200);
         } catch (e) {
             setPwError(e.response?.data || 'Failed to update password.');
@@ -118,7 +114,7 @@ export default function Profile() {
                 {!isAdmin && <NavBar />}
                 <div className="pf-root">
                     <div className="pf-loading">
-                        <Loader2 size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                        <Loader2 size={18} className="pf-loading-icon" />
                         Loading profile…
                     </div>
                 </div>
@@ -126,12 +122,10 @@ export default function Profile() {
         );
     }
 
-    const roleColor = isAdmin ? '#c9a354' : '#4caf88';
-    const roleLabel = isAdmin ? 'Administrator' : 'Passenger';
+    const roleClass = isAdmin ? 'pf-info-val--admin' : 'pf-info-val--passenger';
 
     const content = (
         <div className="pf-root">
-            {/* Hero */}
             <div className="pf-hero">
                 <div className="pf-avatar">
                     <span className="pf-avatar-initials">
@@ -141,42 +135,29 @@ export default function Profile() {
                 <div className="pf-hero-info">
                     <div className="pf-hero-name">{profile?.name || 'No Name'}</div>
                     <div className="pf-hero-email">{profile?.email}</div>
-                    <div
-                        className="pf-hero-badge"
-                        style={{ color: roleColor, borderColor: roleColor + '55', background: roleColor + '11' }}
-                    >
+                    <div className={`pf-hero-badge ${isAdmin ? 'pf-hero-badge--admin' : 'pf-hero-badge--passenger'}`}>
                         {isAdmin
                             ? <ShieldCheck size={11} strokeWidth={2} />
                             : <User size={11} strokeWidth={2} />
                         }
-                        {roleLabel}
+                        {isAdmin ? 'Administrator' : 'Passenger'}
                     </div>
                 </div>
                 {isAdmin && (
                     <button
+                        className="pf-back-btn"
                         onClick={() => navigate('/admin')}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '0.4rem',
-                            fontFamily: 'DM Sans, sans-serif', fontSize: '0.75rem',
-                            color: 'rgba(255,255,255,0.35)', background: 'none',
-                            border: '1px solid rgba(255,255,255,0.1)', borderRadius: '5px',
-                            padding: '0.45rem 0.9rem', cursor: 'pointer', transition: 'all 0.2s',
-                        }}
-                        onMouseOver={e => e.currentTarget.style.color = '#fff'}
-                        onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.35)'}
                     >
                         <ArrowLeft size={13} /> Back to Panel
                     </button>
                 )}
             </div>
 
-            {/* Content */}
             <div className="pf-content">
 
-                {/* Account info (read-only) */}
                 <div className="pf-card">
                     <div className="pf-card-header">
-                        <User size={13} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                        <User size={13} className="pf-card-icon" />
                         <span className="pf-card-title">Account Information</span>
                     </div>
                     <div className="pf-card-body">
@@ -190,15 +171,14 @@ export default function Profile() {
                         </div>
                         <div className="pf-info-row">
                             <span className="pf-info-key">Role</span>
-                            <span className="pf-info-val" style={{ color: roleColor }}>{profile?.role}</span>
+                            <span className={`pf-info-val ${roleClass}`}>{profile?.role}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Update name */}
                 <div className="pf-card">
                     <div className="pf-card-header">
-                        <User size={13} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                        <User size={13} className="pf-card-icon" />
                         <span className="pf-card-title">Update Name</span>
                     </div>
                     <div className="pf-card-body">
@@ -228,42 +208,31 @@ export default function Profile() {
 
                         <button className="pf-save-btn" onClick={handleNameSave} disabled={nameLoading}>
                             {nameLoading
-                                ? <><Loader2 size={13} style={{ marginRight: '0.35rem' }} />Saving…</>
+                                ? <><Loader2 size={13} className="pf-btn-spinner" />Saving…</>
                                 : <><Check size={13} strokeWidth={2.5} />Save Name</>
                             }
                         </button>
                     </div>
                 </div>
 
-                {/* Change password */}
                 <div className="pf-card">
                     <div className="pf-card-header">
-                        <Lock size={13} style={{ color: 'rgba(255,255,255,0.3)' }} />
+                        <Lock size={13} className="pf-card-icon" />
                         <span className="pf-card-title">Change Password</span>
                     </div>
                     <div className="pf-card-body">
 
-                        {/* Current password */}
-                        <div className="pf-field" style={{ marginBottom: '1.1rem' }}>
+                        <div className="pf-field pf-field--spaced">
                             <label className="pf-label">Current Password</label>
-                            <div style={{ position: 'relative' }}>
+                            <div className="pf-input-wrap">
                                 <input
-                                    className="pf-input"
+                                    className="pf-input pf-input--padded"
                                     type={showCurrent ? 'text' : 'password'}
                                     placeholder="••••••••"
                                     value={currentPassword}
                                     onChange={e => setCurrentPassword(e.target.value)}
-                                    style={{ paddingRight: '2.75rem' }}
                                 />
-                                <button
-                                    onClick={() => setShowCurrent(v => !v)}
-                                    style={{
-                                        position: 'absolute', right: '0.8rem', top: '50%',
-                                        transform: 'translateY(-50%)', background: 'none',
-                                        border: 'none', color: 'rgba(255,255,255,0.25)',
-                                        cursor: 'pointer', display: 'flex', padding: 0,
-                                    }}
-                                >
+                                <button className="pf-eye-btn" onClick={() => setShowCurrent(v => !v)}>
                                     {showCurrent ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
@@ -271,78 +240,58 @@ export default function Profile() {
 
                         <div className="pf-divider" />
 
-                        {/* New password */}
-                        <div className="pf-field" style={{ marginBottom: '1.1rem' }}>
+                        <div className="pf-field pf-field--spaced">
                             <label className="pf-label">New Password</label>
-                            <div style={{ position: 'relative' }}>
+                            <div className="pf-input-wrap">
                                 <input
-                                    className="pf-input"
+                                    className="pf-input pf-input--padded"
                                     type={showNew ? 'text' : 'password'}
                                     placeholder="Min. 6 characters"
                                     value={newPassword}
                                     onChange={e => setNewPassword(e.target.value)}
-                                    style={{ paddingRight: '2.75rem' }}
                                 />
-                                <button
-                                    onClick={() => setShowNew(v => !v)}
-                                    style={{
-                                        position: 'absolute', right: '0.8rem', top: '50%',
-                                        transform: 'translateY(-50%)', background: 'none',
-                                        border: 'none', color: 'rgba(255,255,255,0.25)',
-                                        cursor: 'pointer', display: 'flex', padding: 0,
-                                    }}
-                                >
+                                <button className="pf-eye-btn" onClick={() => setShowNew(v => !v)}>
                                     {showNew ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
                             {newPassword && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem' }}>
-                                    <div style={{ display: 'flex', gap: '3px', flex: 1 }}>
+                                <div className="pf-strength">
+                                    <div className="pf-strength-bars">
                                         {[1, 2, 3, 4].map(i => (
-                                            <div key={i} style={{
-                                                flex: 1, height: '3px', borderRadius: '2px',
-                                                background: i <= newPwStrength.score ? newPwStrength.color : 'rgba(255,255,255,0.1)',
-                                                transition: 'background 0.25s',
-                                            }} />
+                                            <div
+                                                key={i}
+                                                className="pf-strength-bar"
+                                                style={{
+                                                    background: i <= newPwStrength.score
+                                                        ? newPwStrength.color
+                                                        : 'rgba(255,255,255,0.1)',
+                                                }}
+                                            />
                                         ))}
                                     </div>
-                                    <span style={{ fontSize: '0.65rem', color: newPwStrength.color, minWidth: '48px', textAlign: 'right', fontFamily: 'var(--font-body)', transition: 'color 0.25s' }}>
+                                    <span className="pf-strength-label" style={{ color: newPwStrength.color }}>
                                         {newPwStrength.label}
                                     </span>
                                 </div>
                             )}
                         </div>
 
-                        {/* Confirm password */}
-                        <div className="pf-field" style={{ marginBottom: 0 }}>
+                        <div className="pf-field pf-field--last">
                             <label className="pf-label">Confirm New Password</label>
-                            <div style={{ position: 'relative' }}>
+                            <div className="pf-input-wrap">
                                 <input
-                                    className="pf-input"
+                                    className={`pf-input pf-input--padded${confirmPassword && newPassword !== confirmPassword ? ' pf-input--mismatch' : ''}`}
                                     type={showConfirm ? 'text' : 'password'}
                                     placeholder="Repeat new password"
                                     value={confirmPassword}
                                     onChange={e => setConfirmPassword(e.target.value)}
-                                    style={{
-                                        paddingRight: '2.75rem',
-                                        borderColor: confirmPassword && newPassword !== confirmPassword
-                                            ? 'rgba(224,95,95,0.5)' : undefined,
-                                    }}
                                 />
-                                <button
-                                    onClick={() => setShowConfirm(v => !v)}
-                                    style={{
-                                        position: 'absolute', right: '0.8rem', top: '50%',
-                                        transform: 'translateY(-50%)', background: 'none',
-                                        border: 'none', color: 'rgba(255,255,255,0.25)',
-                                        cursor: 'pointer', display: 'flex', padding: 0,
-                                    }}
-                                >
+                                <button className="pf-eye-btn" onClick={() => setShowConfirm(v => !v)}>
                                     {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
                             {confirmPassword && newPassword !== confirmPassword && (
-                                <div className="pf-input-hint" style={{ color: 'rgba(224,95,95,0.7)' }}>
+                                <div className="pf-input-hint pf-input-hint--error">
                                     Passwords do not match.
                                 </div>
                             )}
@@ -361,7 +310,7 @@ export default function Profile() {
 
                         <button className="pf-save-btn" onClick={handlePasswordSave} disabled={pwLoading}>
                             {pwLoading
-                                ? <><Loader2 size={13} style={{ marginRight: '0.35rem' }} />Updating…</>
+                                ? <><Loader2 size={13} className="pf-btn-spinner" />Updating…</>
                                 : <><Lock size={13} />Change Password</>
                             }
                         </button>
@@ -374,8 +323,6 @@ export default function Profile() {
         </div>
     );
 
-    // Admin gets no NavBar (they use the admin topbar via AdminPanel)
-    // Regular users get NavBar
     if (isAdmin) return content;
 
     return (

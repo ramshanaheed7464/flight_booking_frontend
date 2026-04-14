@@ -7,7 +7,6 @@
     flex-direction: column;
 }
 
-/* ── Hero ── */
 .pf-hero {
     padding: 7rem 2.5rem 2.5rem;
     background: linear-gradient(180deg, rgba(201, 163, 84, 0.06) 0%, transparent 100%);
@@ -72,7 +71,37 @@
     margin-top: var(--space-2);
 }
 
-/* ── Content area ── */
+.pf-hero-badge--admin {
+    color: var(--color-gold);
+    border-color: var(--color-gold-dim);
+    background: var(--color-gold-faint);
+}
+
+.pf-hero-badge--passenger {
+    color: var(--color-success);
+    border-color: var(--color-success-border);
+    background: var(--color-success-bg);
+}
+
+.pf-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-text-dim);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.45rem 0.9rem;
+    cursor: pointer;
+    transition: color var(--transition-base);
+}
+
+.pf-back-btn:hover {
+    color: var(--color-text);
+}
+
 .pf-content {
     flex: 1;
     padding: 2.5rem;
@@ -84,7 +113,6 @@
     gap: var(--space-6);
 }
 
-/* ── Card ── */
 .pf-card {
     background: var(--color-bg-card);
     border: 1px solid var(--color-border);
@@ -100,6 +128,10 @@
     gap: var(--space-2);
 }
 
+.pf-card-icon {
+    color: var(--color-text-faint);
+}
+
 .pf-card-title {
     font-family: var(--font-body);
     font-size: 0.78rem;
@@ -113,7 +145,6 @@
     padding: 1.75rem;
 }
 
-/* ── Form elements ── */
 .pf-form-row {
     display: flex;
     gap: var(--space-4);
@@ -127,6 +158,14 @@
 }
 
 .pf-field:last-child {
+    margin-bottom: 0;
+}
+
+.pf-field--spaced {
+    margin-bottom: 1.1rem;
+}
+
+.pf-field--last {
     margin-bottom: 0;
 }
 
@@ -168,11 +207,73 @@
     cursor: not-allowed;
 }
 
+.pf-input--padded {
+    padding-right: 2.75rem;
+}
+
+.pf-input--mismatch {
+    border-color: var(--color-danger-input-border);
+}
+
 .pf-input-hint {
     font-family: var(--font-body);
     font-size: 0.68rem;
     color: var(--color-text-ghost);
     margin-top: 0.35rem;
+}
+
+.pf-input-hint--error {
+    color: rgba(224, 95, 95, 0.7);
+}
+
+.pf-input-wrap {
+    position: relative;
+}
+
+.pf-eye-btn {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-ghost);
+    cursor: pointer;
+    display: flex;
+    padding: 0;
+    transition: color var(--transition-base);
+}
+
+.pf-eye-btn:hover {
+    color: var(--color-text-dim);
+}
+
+.pf-strength {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.pf-strength-bars {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+}
+
+.pf-strength-bar {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    transition: background var(--transition-medium);
+}
+
+.pf-strength-label {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    min-width: 48px;
+    text-align: right;
+    transition: color var(--transition-medium);
 }
 
 .pf-divider {
@@ -181,7 +282,6 @@
     margin: var(--space-6) 0;
 }
 
-/* ── Save button ── */
 .pf-save-btn {
     display: flex;
     align-items: center;
@@ -210,7 +310,26 @@
     cursor: default;
 }
 
-/* ── Feedback messages ── */
+.pf-btn-spinner {
+    margin-right: 0.35rem;
+}
+
+.pf-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-16);
+    color: var(--color-gold-dim);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.pf-loading-icon {
+    margin-right: 0.5rem;
+}
+
 .pf-success {
     display: flex;
     align-items: center;
@@ -239,7 +358,6 @@
     margin-top: var(--space-4);
 }
 
-/* ── Read-only info rows ── */
 .pf-info-row {
     display: flex;
     justify-content: space-between;
@@ -267,13 +385,10 @@
     color: var(--color-text-muted);
 }
 
-/* ── Loading ── */
-.pf-loading {
-    text-align: center;
-    padding: var(--space-16);
-    color: rgba(201, 163, 84, 0.6);
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+.pf-info-val--admin {
+    color: var(--color-gold);
+}
+
+.pf-info-val--passenger {
+    color: var(--color-success);
 }

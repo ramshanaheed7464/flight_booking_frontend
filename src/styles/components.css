@@ -627,40 +627,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: var(--color-bg);
 }
 
-.btn-swap {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--color-gold);
-    background: transparent;
-    color: var(--color-gold);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition:
-        background var(--transition-base),
-        color var(--transition-base),
-        border-color var(--transition-base),
-        transform var(--transition-base);
-}
-
-.btn-swap:hover {
-    background: var(--color-gold);
-    color: var(--color-bg);
-    transform: rotate(180deg);
-}
-
-.btn-swap svg,
-.btn-swap i,
-.btn-swap span {
-    color: inherit;
-    fill: currentColor;
-    stroke: currentColor;
-    pointer-events: none;
-}
-
 .autocomplete-wrap {
     position: relative;
     display: flex;

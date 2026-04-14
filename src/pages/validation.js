@@ -133,6 +133,18 @@ export function validatemealsIncluded(val) {
     return '';
 }
 
+export function validateMeals(val, mealsIncluded) {
+    if (mealsIncluded !== 'true') return '';
+    if (!val?.trim()) return 'Meal options are required when meals are included.';
+    return '';
+}
+
+export function validateEntertainmentDetails(val, isEntertainmentAvailable) {
+    if (isEntertainmentAvailable !== 'true') return '';
+    if (!val?.trim()) return 'Entertainment details are required when entertainment is added.';
+    return '';
+}
+
 export function validateRefundable(val) {
     if (val === '') return 'Please specify if the flight is refundable.';
     if (val !== 'true' && val !== 'false') return 'Please select refundable option from the given options.';
@@ -319,7 +331,6 @@ export function validatePassenger(p) {
         dateOfBirth: validateDateOfBirth(p.dateOfBirth),
         gender: validateGender(p.gender),
         phone: validatePhone(p.phone, p.nationality),
-        mealPreference: validateMealPreference(p.mealPreference),
     });
 }
 export function runValidators(validators) {

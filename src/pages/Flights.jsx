@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, PlaneTakeoff, ArrowLeftRight } from 'lucide-react';
 import { getFlights } from '../api/flightApi';
-import { getNationalities } from '../api/bookingOptionsApi';
 import { getAllCities } from '../api/LocationApi';
 import { DEFAULT_NATIONALITIES } from './validation';
 import NavBar from '../components/NavBar';
@@ -17,7 +16,7 @@ export default function Flights() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState('departure');
-    const [nationalities, setNationalities] = useState(DEFAULT_NATIONALITIES);
+    const [nationalities] = useState(DEFAULT_NATIONALITIES);
 
     const [fromCity, setFromCity] = useState('');
     const [toCity, setToCity] = useState('');
@@ -25,6 +24,8 @@ export default function Flights() {
     const [cities, setCities] = useState([]);
 
     const [applied, setApplied] = useState({ fromCity: '', toCity: '', date: '' });
+
+    const isSearchActive = applied.fromCity || applied.toCity || applied.date;
 
     const load = () => {
         setLoading(true);
@@ -36,13 +37,8 @@ export default function Flights() {
 
     useEffect(() => {
         load();
-
         getAllCities()
             .then(res => setCities(Array.isArray(res.data) ? res.data : []))
-            .catch(() => { });
-
-        getNationalities()
-            .then(res => { if (res.data?.length) setNationalities(res.data); })
             .catch(() => { });
     }, []);
 
@@ -66,18 +62,14 @@ export default function Flights() {
     const filtered = flights
         .filter(f => {
             if (!f.departureTime || new Date(f.departureTime) <= now) return false;
-
             if (applied.fromCity && !f.source?.toLowerCase().includes(applied.fromCity.toLowerCase()))
                 return false;
-
             if (applied.toCity && !f.destination?.toLowerCase().includes(applied.toCity.toLowerCase()))
                 return false;
-
             if (applied.date) {
                 const dep = f.departureTime ? new Date(f.departureTime).toISOString().slice(0, 10) : '';
                 if (dep !== applied.date) return false;
             }
-
             return true;
         })
         .sort((a, b) => {
@@ -87,12 +79,46 @@ export default function Flights() {
             return new Date(a.departureTime) - new Date(b.departureTime);
         });
 
+    const upcomingTotal = flights.filter(f => f.departureTime && new Date(f.departureTime) > now).length;
+
+    const renderEmptyState = () => {
+        if (isSearchActive) {
+            const parts = [];
+            if (applied.fromCity) parts.push(`from "${applied.fromCity}"`);
+            if (applied.toCity) parts.push(`to "${applied.toCity}"`);
+            if (applied.date) parts.push(`on ${new Date(applied.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`);
+
+            return (
+                <div className="fl-empty">
+                    <PlaneTakeoff size={32} className="fl-empty-icon" />
+                    <p className="fl-empty-title">No flights found</p>
+                    <p className="fl-empty-desc">
+                        No upcoming flights {parts.join(' ')}.<br />
+                        Try adjusting your search or{' '}
+                        <button className="fl-empty-clear" onClick={handleClear}>clear filters</button>
+                        {' '}to see all available routes.
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="fl-empty">
+                <PlaneTakeoff size={32} className="fl-empty-icon" />
+                <p className="fl-empty-title">No upcoming flights</p>
+                <p className="fl-empty-desc">
+                    There are no flights scheduled at the moment.<br />
+                    Check back soon - new routes are added regularly.
+                </p>
+            </div>
+        );
+    };
+
     return (
         <>
             <NavBar />
             <div className="fl-root">
 
-                {/* ── Hero / search panel ── */}
                 <div className="fl-hero">
                     <h1 className="fl-title">Find your <em>Flight</em></h1>
                     <p className="fl-sub">
@@ -108,8 +134,8 @@ export default function Flights() {
                             placeholder="Departure city…"
                         />
 
-                        <button className="fl-swap-btn" onClick={handleSwap}>
-                            ⇄
+                        <button className="fl-swap-btn" onClick={handleSwap} title="Swap cities">
+                            <ArrowLeftRight size={16} />
                         </button>
 
                         <CityAutocomplete
@@ -142,7 +168,7 @@ export default function Flights() {
                         </div>
                     </div>
 
-                    {(applied.fromCity || applied.toCity || applied.date) && (
+                    {isSearchActive && (
                         <div className="fl-active-filters">
                             {applied.fromCity && <span className="fl-filter-chip">From: {applied.fromCity}</span>}
                             {applied.toCity && <span className="fl-filter-chip">To: {applied.toCity}</span>}
@@ -155,7 +181,6 @@ export default function Flights() {
                     )}
                 </div>
 
-                {/* ── Results ── */}
                 <div className="fl-content">
                     {loading && (
                         <div className="fl-loading">Loading flights…</div>
@@ -166,23 +191,28 @@ export default function Flights() {
 
                     {!loading && !error && (
                         <>
-                            <div className="fl-bar">
-                                <span className="fl-count">
-                                    {filtered.length} flight{filtered.length !== 1 ? 's' : ''} found
-                                </span>
-                                <div className="fl-sort-wrap">
-                                    <span className="fl-sort-label">Sort</span>
-                                    <CustomSelect
-                                        value={sortBy}
-                                        onChange={setSortBy}
-                                        options={SORT_OPTIONS}
-                                    />
+                            {filtered.length > 0 && (
+                                <div className="fl-bar">
+                                    <span className="fl-count">
+                                        {isSearchActive
+                                            ? `${filtered.length} of ${upcomingTotal} flight${upcomingTotal !== 1 ? 's' : ''} match your search`
+                                            : `${filtered.length} upcoming flight${filtered.length !== 1 ? 's' : ''}`
+                                        }
+                                    </span>
+                                    <div className="fl-sort-wrap">
+                                        <span className="fl-sort-label">Sort</span>
+                                        <CustomSelect
+                                            value={sortBy}
+                                            onChange={setSortBy}
+                                            options={SORT_OPTIONS}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="fl-list">
                                 {filtered.length === 0
-                                    ? <div className="fl-empty">No flights match your search.</div>
+                                    ? renderEmptyState()
                                     : filtered.map(f => (
                                         <FlightCard
                                             key={f.id}
