@@ -23,9 +23,9 @@ export default function Home() {
                         <button className="home-cta secondary" onClick={login}>
                             Login
                         </button>
-                        <Link to="/forgot-password" className="home-cta secondary">
+                        {/* <Link to="/forgot-password" className="home-cta secondary">
                             Forgot Password?
-                        </Link>
+                        </Link> */}
                     </>
                 )}
                 {user && <Link to="/bookings" className="home-cta secondary">My Bookings</Link>}
