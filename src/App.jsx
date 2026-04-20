@@ -26,6 +26,15 @@ function UserRoute({ children }) {
   return children;
 }
 
+// Allows unauthenticated access but blocks rendering until auth resolves,
+// then redirects admins away before the page paints.
+function PublicRoute({ children }) {
+  const { user, initialized } = useContext(AuthContext);
+  if (!initialized) return null;
+  if (user?.role === "ADMIN") return <Navigate to="/admin" replace />;
+  return children;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -34,7 +43,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/flights" element={<Flights />} />
+          <Route path="/flights" element={<PublicRoute><Flights /></PublicRoute>} />
           <Route path="/bookings" element={<UserRoute><Bookings /></UserRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
           <Route path="/profile" element={<Profile />} />

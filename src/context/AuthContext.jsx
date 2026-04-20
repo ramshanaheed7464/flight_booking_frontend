@@ -47,6 +47,14 @@ export const AuthProvider = ({ children }) => {
                         console.error('Failed to refresh token:', e);
                     }
 
+                    // Redirect admin immediately from JWT — before any page renders
+                    const tokenRoles = keycloak.tokenParsed?.realm_access?.roles || [];
+                    const jwtIsAdmin = tokenRoles.includes('ADMIN') || tokenRoles.includes('admin');
+                    if (jwtIsAdmin && !window.location.pathname.startsWith('/admin')) {
+                        window.location.replace('/admin');
+                        return;
+                    }
+
                     // sync writes the JWT name to DB; use its response if available,
                     // otherwise fall back to a separate /user/me fetch
                     const syncedUser = await syncUserWithBackend();
@@ -54,16 +62,12 @@ export const AuthProvider = ({ children }) => {
 
                     if (dbUser) {
                         setUser(dbUser);
-                        if (dbUser.role === 'ADMIN' && window.location.pathname === '/flights') {
-                            window.location.replace('/admin');
-                        }
                     } else {
                         const tokenParsed = keycloak.tokenParsed;
-                        const roles = tokenParsed?.realm_access?.roles || [];
                         setUser({
                             name: tokenParsed?.name || tokenParsed?.preferred_username,
                             email: tokenParsed?.email,
-                            role: (roles.includes('ADMIN') || roles.includes('admin')) ? 'ADMIN' : 'USER',
+                            role: jwtIsAdmin ? 'ADMIN' : 'USER',
                         });
                     }
                 }

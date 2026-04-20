@@ -6,6 +6,7 @@ import {
     User, Globe, Phone, Utensils,
 } from 'lucide-react';
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../../../api/bookingApi';
+import { isDuffelBooking } from '../../../utils/bookingUtils';
 import { DeleteModal } from './AdminModals';
 import StatCard from '../../../components/StatCard';
 import { STATUS_COLORS } from '../../../constants/statusColors';
@@ -14,9 +15,6 @@ import { parsePassengers } from '../../../utils/bookingUtils';
 
 const STATUSES = ['ALL', 'BOOKED', 'COMPLETED', 'CANCELLED'];
 
-/**
- * PassengerExpansion — private sub-component; renders expanded passenger details row.
- */
 function PassengerExpansion({ passengers }) {
     if (!passengers?.length) {
         return <div className="ap-pax-empty">No passenger details recorded.</div>;
@@ -29,13 +27,13 @@ function PassengerExpansion({ passengers }) {
                         <User size={11} /> Passenger {i + 1}
                     </div>
                     {[
-                        { icon: <User size={10} />,    label: 'Full Name',    val: p.fullName },
-                        { icon: null,                  label: 'Passport No.', val: p.passportNumber },
-                        { icon: <Globe size={10} />,   label: 'Nationality',  val: p.nationality },
-                        { icon: null,                  label: 'Date of Birth',val: p.dateOfBirth },
-                        { icon: null,                  label: 'Gender',       val: p.gender },
-                        { icon: <Phone size={10} />,   label: 'Phone',        val: p.phone },
-                        { icon: <Utensils size={10} />,label: 'Meal',         val: p.mealPreference },
+                        { icon: <User size={10} />, label: 'Full Name', val: p.fullName },
+                        { icon: null, label: 'Passport No.', val: p.passportNumber },
+                        { icon: <Globe size={10} />, label: 'Nationality', val: p.nationality },
+                        { icon: null, label: 'Date of Birth', val: p.dateOfBirth },
+                        { icon: null, label: 'Gender', val: p.gender },
+                        { icon: <Phone size={10} />, label: 'Phone', val: p.phone },
+                        { icon: <Utensils size={10} />, label: 'Meal', val: p.mealPreference },
                     ].map(({ icon, label, val }) => (
                         <div key={label}>
                             <div className="ap-pax-field-label">{icon}{label}</div>
@@ -50,13 +48,6 @@ function PassengerExpansion({ passengers }) {
     );
 }
 
-/**
- * BookingsTab — SRP: admin CRUD for bookings.
- * StatCard imported from shared components (DRY / DIP).
- * Status colors from constants/statusColors.js (OCP).
- * Date formatting delegated to utils/dateFormat.js.
- * parsePassengers delegated to utils/bookingUtils.js.
- */
 export default function BookingsTab() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -69,7 +60,7 @@ export default function BookingsTab() {
     const load = () => {
         setLoading(true);
         getAllBookings()
-            .then(r => setBookings(r.data))
+            .then(r => setBookings(r.data ?? []))
             .catch(e => {
                 const status = e.response?.status;
                 const msg = e.response?.data?.message || e.response?.data || e.message || 'Unknown error';
@@ -115,11 +106,11 @@ export default function BookingsTab() {
         const matchStatus = filterStatus === 'ALL' || b.status === filterStatus;
         const matchSearch = search === '' || [
             b.id?.toString(),
-            b.flight?.flightNumber,
-            b.flight?.source,
-            b.flight?.destination,
-            b.user?.email,
-            b.user?.name,
+            b.flight?.flightNumber, b.flightNumber,
+            b.flight?.source, b.origin,
+            b.flight?.destination, b.destination,
+            b.bookingReference, b.carrier,
+            b.user?.email, b.user?.name,
         ].some(v => v?.toLowerCase().includes(search.toLowerCase()));
         return matchStatus && matchSearch;
     });
@@ -134,10 +125,10 @@ export default function BookingsTab() {
             </div>
 
             <div className="ap-stats">
-                <StatCard icon={<BookOpen size={18} />}    iconClass="ap-stat-icon--gold"   num={counts.ALL}       label="Total Bookings" />
-                <StatCard icon={<CheckCircle size={18} />} iconClass="ap-stat-icon--green"  num={counts.BOOKED}    label="Active" />
-                <StatCard icon={<XCircle size={18} />}     iconClass="ap-stat-icon--danger" num={counts.CANCELLED} label="Cancelled" />
-                <StatCard icon={<Clock size={18} />}       iconClass="ap-stat-icon--blue"   num={counts.COMPLETED} label="Completed" />
+                <StatCard icon={<BookOpen size={18} />} iconClass="ap-stat-icon--gold" num={counts.ALL} label="Total Bookings" />
+                <StatCard icon={<CheckCircle size={18} />} iconClass="ap-stat-icon--green" num={counts.BOOKED} label="Active" />
+                <StatCard icon={<XCircle size={18} />} iconClass="ap-stat-icon--danger" num={counts.CANCELLED} label="Cancelled" />
+                <StatCard icon={<Clock size={18} />} iconClass="ap-stat-icon--blue" num={counts.COMPLETED} label="Completed" />
             </div>
 
             <div className="ap-action-bar">
@@ -180,14 +171,27 @@ export default function BookingsTab() {
                             {filtered.length === 0 ? (
                                 <tr><td colSpan={10} className="ap-empty">No bookings found.</td></tr>
                             ) : filtered.map(b => {
-                                const isExpanded = expandedId === b.id;
+                                const duffel = b._duffel || isDuffelBooking(b);
+                                const rowKey = duffel ? `duffel-${b.id}` : `regular-${b.id}`;
+                                const expandKey = duffel ? `duffel-${b.id}` : b.id;
+                                const isExpanded = expandedId === expandKey;
                                 const passengers = parsePassengers(b.passengerDetails);
                                 const statusColor = STATUS_COLORS[b.status] || 'var(--color-gold)';
+
+                                const route = duffel
+                                    ? { from: b.origin, to: b.destination }
+                                    : { from: b.flight?.source, to: b.flight?.destination };
+                                const flightNum = duffel
+                                    ? (b.carrier ? `${b.carrier} · ${b.flightNumber || ''}` : b.flightNumber)
+                                    : b.flight?.flightNumber;
+                                const depTime = duffel ? b.departureAt : b.flight?.departureTime;
+                                const tripLabel = duffel ? 'Live' : (b.tripType || 'ONE_WAY').replace('_', ' ').toLowerCase();
+
                                 return (
-                                    <React.Fragment key={b.id}>
+                                    <React.Fragment key={rowKey}>
                                         <tr
                                             className="ap-table-row--clickable"
-                                            onClick={() => setExpandedId(isExpanded ? null : b.id)}
+                                            onClick={() => setExpandedId(isExpanded ? null : expandKey)}
                                         >
                                             <td><span className="ap-table-mono">#{b.id}</span></td>
                                             <td>
@@ -198,32 +202,32 @@ export default function BookingsTab() {
                                             </td>
                                             <td>
                                                 <div className="ap-table-route">
-                                                    {b.flight?.source || '—'}
+                                                    {route.from || '—'}
                                                     <ArrowRight size={11} className="ap-table-route-arrow" />
-                                                    {b.flight?.destination || '—'}
+                                                    {route.to || '—'}
                                                 </div>
                                             </td>
-                                            <td><span className="ap-table-mono">{b.flight?.flightNumber || '—'}</span></td>
+                                            <td><span className="ap-table-mono">{flightNum || '—'}</span></td>
                                             <td>
                                                 <div className="ap-date-cell">
                                                     <div className="ap-table-mono ap-date-main">
-                                                        {formatMediumDate(b.flight?.departureTime)}
+                                                        {formatMediumDate(depTime)}
                                                     </div>
                                                     <div className="ap-date-time">
-                                                        {formatTime(b.flight?.departureTime)}
+                                                        {formatTime(depTime)}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td><span className="ap-table-pax">{b.passengers ?? 1}</span></td>
                                             <td>
-                                                <span className="ap-trip-type">
-                                                    {(b.tripType || 'ONE_WAY').replace('_', ' ').toLowerCase()}
+                                                <span className="ap-trip-type" style={duffel ? { color: 'var(--color-success)' } : {}}>
+                                                    {tripLabel}
                                                 </span>
                                             </td>
                                             <td>
                                                 <select
                                                     className="ap-status-select"
-                                                    value={b.status}
+                                                    value={b.status ?? ''}
                                                     onClick={e => e.stopPropagation()}
                                                     onChange={e => {
                                                         e.stopPropagation();
@@ -254,9 +258,14 @@ export default function BookingsTab() {
                                         </tr>
 
                                         {isExpanded && (
-                                            <tr key={`${b.id}-details`}>
+                                            <tr key={`${rowKey}-details`}>
                                                 <td colSpan={10} className="ap-pax-expansion-cell">
                                                     <div className="ap-pax-expansion-inner">
+                                                        {duffel && b.bookingReference && (
+                                                            <div className="ap-pax-expansion-label" style={{ marginBottom: '0.5rem' }}>
+                                                                Ref: <span style={{ color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>{b.bookingReference}</span>
+                                                            </div>
+                                                        )}
                                                         <div className="ap-pax-expansion-label">Passenger Details</div>
                                                         <PassengerExpansion passengers={passengers} />
                                                     </div>

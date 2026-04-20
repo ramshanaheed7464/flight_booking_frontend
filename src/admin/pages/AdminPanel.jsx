@@ -35,7 +35,7 @@ export default function AdminPanel() {
                     <span className="ap-brand-badge">Admin</span>
                 </div>
                 <div className="ap-topbar-right">
-                    <span className="ap-topbar-user">{user?.email}</span>
+                    <span className="ap-topbar-user">{user?.name || user?.email}</span>
                     <button
                         className="ap-logout-btn"
                         onClick={() => navigate('/profile')}

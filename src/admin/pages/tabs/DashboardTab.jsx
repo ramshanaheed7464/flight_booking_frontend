@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Plane, BookOpen, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { getFlights } from '../../../api/flightApi';
 import { getAllBookings } from '../../../api/bookingApi';
+import { isDuffelBooking } from '../../../utils/bookingUtils';
 import StatCard from '../../../components/StatCard';
 import StatusBadge from '../../../components/StatusBadge';
 import './AdminTabs.css';
@@ -24,7 +25,10 @@ export default function DashboardTab({ onNav }) {
 
     const revenue = bookings
         .filter(b => b.status === 'BOOKED' || b.status === 'COMPLETED')
-        .reduce((s, b) => s + ((b.flight?.price ?? 0) * (b.passengers ?? 1)), 0);
+        .reduce((s, b) => {
+            if (isDuffelBooking(b)) return s + Number(b.totalAmount ?? 0);
+            return s + ((b.flight?.price ?? 0) * (b.passengers ?? 1));
+        }, 0);
 
     return (
         <>
@@ -81,21 +85,26 @@ export default function DashboardTab({ onNav }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bookings.slice(0, 6).map(b => (
-                                    <tr key={b.id}>
-                                        <td><span className="ap-table-mono">#{b.id}</span></td>
-                                        <td className="ap-table-user-email">{b.user?.email || '—'}</td>
-                                        <td>
-                                            <div className="ap-table-route">
-                                                {b.flight?.source || '—'}
-                                                <ArrowRight size={11} className="ap-table-route-arrow" />
-                                                {b.flight?.destination || '—'}
-                                            </div>
-                                        </td>
-                                        <td><StatusBadge status={b.status} /></td>
-                                        <td className="ap-table-pax-sm">{b.passengers ?? 1}</td>
-                                    </tr>
-                                ))}
+                                {bookings.slice(0, 6).map(b => {
+                                    const duffel = isDuffelBooking(b);
+                                    const from = duffel ? b.origin : b.flight?.source;
+                                    const to   = duffel ? b.destination : b.flight?.destination;
+                                    return (
+                                        <tr key={duffel ? `duffel-${b.id}` : `regular-${b.id}`}>
+                                            <td><span className="ap-table-mono">#{b.id}</span></td>
+                                            <td className="ap-table-user-email">{b.user?.email || '—'}</td>
+                                            <td>
+                                                <div className="ap-table-route">
+                                                    {from || '—'}
+                                                    <ArrowRight size={11} className="ap-table-route-arrow" />
+                                                    {to || '—'}
+                                                </div>
+                                            </td>
+                                            <td><StatusBadge status={b.status} /></td>
+                                            <td className="ap-table-pax-sm">{b.passengers ?? 1}</td>
+                                        </tr>
+                                    );
+                                })}
                                 {bookings.length === 0 && (
                                     <tr><td colSpan={5} className="ap-empty">No bookings yet.</td></tr>
                                 )}
