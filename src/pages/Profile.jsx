@@ -29,7 +29,7 @@ function getInitials(name, email) {
 }
 
 export default function Profile() {
-    const { user, login, logout } = useContext(AuthContext);
+    const { user, updateUser, login, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState(null);
@@ -73,8 +73,7 @@ export default function Profile() {
         try {
             const res = await updateProfile({ name: name.trim() });
             setProfile(res.data);
-            const stored = JSON.parse(localStorage.getItem('user') || '{}');
-            localStorage.setItem('user', JSON.stringify({ ...stored, name: res.data.name }));
+            updateUser({ name: res.data.name });
             setNameSuccess('Name updated successfully.');
             setTimeout(() => setNameSuccess(''), 3500);
         } catch (e) {

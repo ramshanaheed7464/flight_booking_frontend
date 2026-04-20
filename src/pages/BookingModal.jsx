@@ -7,11 +7,58 @@ import { createBooking } from '../api/bookingApi';
 import { validatePassenger } from './validation';
 import PassengerForm from './PassengerForm';
 import CustomSelect from '../components/CustomSelect';
+import "./BookingModal.css"
 
 const emptyPassenger = () => ({
-    fullName: '', passportNumber: '', nationality: '',
-    dateOfBirth: '', gender: '', phone: '', mealPreference: ''
+    fullName: '', email: '', passportNumber: '', passportExpiry: '',
+    nationality: '', dateOfBirth: '', gender: '', phone: '', mealPreference: '',
 });
+
+const FIELD_LABELS = {
+    flightId: 'Flight', returnFlightId: 'Return flight',
+    passengers: 'Passenger count', fullName: 'Full name',
+    email: 'Email address', passportNumber: 'Passport number',
+    passportExpiry: 'Passport expiry', nationality: 'Nationality',
+    dateOfBirth: 'Date of birth', gender: 'Gender',
+    phone: 'Phone number', mealPreference: 'Meal preference',
+    id: 'Passenger ID',
+};
+
+function parseBookingError(e) {
+    const data = e.response?.data;
+    if (!data) return 'Booking failed. Please check your connection and try again.';
+
+    if (data.errors && Array.isArray(data.errors)) {
+        const lines = data.errors.map(err => {
+            const label = FIELD_LABELS[err.field] ?? err.field;
+            return `${label}: ${err.defaultMessage ?? err.message}`;
+        });
+        return lines.join('\n');
+    }
+
+    if (typeof data === 'object') {
+        const msg = data.message ?? data.error ?? data.detail;
+        if (msg) return friendlyMessage(msg);
+    }
+
+    if (typeof data === 'string') return friendlyMessage(data);
+
+    return 'Booking failed. Please try again.';
+}
+
+function friendlyMessage(raw) {
+    if (/field\s+'?id'?\s+can'?t\s+be\s+blank/i.test(raw))
+        return 'Some passenger details are incomplete. Please fill in all required fields and try again.';
+    if (/not\s+enough\s+seat/i.test(raw) || /seats?\s+available/i.test(raw))
+        return 'Not enough seats available on this flight. Please reduce the number of passengers.';
+    if (/already\s+booked/i.test(raw) || /duplicate/i.test(raw))
+        return 'You already have a booking on this flight.';
+    if (/unauthorized|401/i.test(raw))
+        return 'Your session has expired. Please log in again and retry.';
+    if (/flight.*not\s+found|no\s+flight/i.test(raw))
+        return 'This flight is no longer available. Please go back and select another.';
+    return raw;
+}
 
 export default function BookingModal({ flight, flights, onClose, onBooked, nationalities, mealPreferences }) {
     const [step, setStep] = useState(1);
@@ -29,6 +76,8 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
     const total = tripType === 'ROUND_TRIP' && returnFlight
         ? (price + (returnFlight.price ?? 0)) * passengers
         : price * passengers;
+
+    const departureDate = flight.departureTime ?? null;
 
     const returnOptions = flights.filter(f =>
         f.id !== flight.id &&
@@ -74,31 +123,23 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
     };
 
     const validateStep2 = () => {
-        const allErrors = passengerForms.map(p => validatePassenger(p).errors);
+        const allErrors = passengerForms.map(p => validatePassenger(p, departureDate).errors);
         setFormErrors(allErrors);
         return allErrors.every(e => Object.keys(e).length === 0);
     };
 
     const handleBook = async () => {
-        if (!validateStep2()) {
-            console.log('passengerForms:', passengerForms);
-            console.log('Validation failed:', formErrors);
-            return;
-        }
+        if (!validateStep2()) return;
         setLoading(true);
         setError('');
         try {
             const body = { flightId: flight.id, tripType, passengers, passengerDetails: passengerForms };
             if (tripType === 'ROUND_TRIP') body.returnFlightId = Number(returnFlightId);
-            console.log('Sending booking:', body);
-            const res = await createBooking(body);
-            console.log('Booking response:', res);
+            await createBooking(body);
             setSuccess(true);
             setTimeout(() => { onBooked(); onClose(); }, 1800);
         } catch (e) {
-            console.log('Booking error:', e);
-            console.log('Booking error response:', e.response);
-            setError(e.response?.data || 'Booking failed. Please try again.');
+            setError(parseBookingError(e));
         } finally {
             setLoading(false);
         }
@@ -189,7 +230,7 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
                         </div>
 
                         {error && (
-                            <div className="modal-error"><AlertCircle size={14} /> {error}</div>
+                            <div className="modal-error"><AlertCircle size={14} style={{ flexShrink: 0, marginTop: 1 }} /><span>{error}</span></div>
                         )}
 
                         <button className="modal-btn" onClick={() => { if (validateStep1()) setStep(2); }}>
@@ -211,6 +252,9 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
                                     errors={formErrors[i]}
                                     nationalities={nationalities}
                                     mealPreferences={mealPreferences}
+                                    showEmail
+                                    showPassportExpiry
+                                    departureDate={departureDate}
                                 />
                             ))}
                         </div>
@@ -226,7 +270,7 @@ export default function BookingModal({ flight, flights, onClose, onBooked, natio
                         </div>
 
                         {error && (
-                            <div className="modal-error"><AlertCircle size={14} /> {error}</div>
+                            <div className="modal-error"><AlertCircle size={14} style={{ flexShrink: 0, marginTop: 1 }} /><span>{error}</span></div>
                         )}
 
                         {success ? (

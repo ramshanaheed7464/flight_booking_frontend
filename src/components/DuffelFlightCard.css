@@ -1,0 +1,516 @@
+@import '../styles/palette.css';
+
+/* ── Card shell ──────────────────────────────────────────────────────────── */
+.dfc {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.4rem 1.75rem;
+    display: grid;
+    grid-template-columns: minmax(0, 380px) auto auto;
+    align-items: center;
+    gap: var(--space-6);
+    transition:
+        border-color var(--transition-medium),
+        background var(--transition-medium),
+        transform var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.dfc::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #4caf88, transparent);
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+}
+
+.dfc:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-bg-card-hover);
+    transform: translateY(-1px);
+}
+
+.dfc:hover::before {
+    opacity: 1;
+}
+
+.dfc--error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 1rem 1.5rem;
+    color: var(--color-danger);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    grid-template-columns: none;
+}
+
+/* ── Route section ───────────────────────────────────────────────────────── */
+.dfc-route {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-width: 0;
+    overflow: hidden;
+}
+
+.dfc-city {
+    text-align: center;
+    min-width: 0;
+}
+
+.dfc-code {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.dfc-label {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 300;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+}
+
+.dfc-mid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 80px;
+}
+
+.dfc-line {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dfc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: 1.5px solid #4caf88;
+    flex-shrink: 0;
+}
+
+.dfc-dash {
+    flex: 1;
+    height: 1px;
+    background: rgba(76, 175, 136, 0.35);
+}
+
+.dfc-plane-icon {
+    color: #4caf88;
+    flex-shrink: 0;
+}
+
+.dfc-fn {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--color-text-ghost);
+}
+
+.dfc-duration {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--color-text-faint);
+}
+
+.dfc-stops {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    color: var(--color-warning-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+/* ── Meta ────────────────────────────────────────────────────────────────── */
+.dfc-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 100px;
+}
+
+.dfc-lbl {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-ghost);
+}
+
+.dfc-time {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+.dfc-carrier {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+/* ── Bottom row ──────────────────────────────────────────────────────────── */
+.dfc-bottom-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.dfc-view-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid rgba(76, 175, 136, 0.4);
+    color: #4caf88;
+    background: transparent;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-base), border-color var(--transition-base);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dfc-view-btn:hover {
+    background: rgba(76, 175, 136, 0.1);
+    border-color: #4caf88;
+}
+
+.dfc-login-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(201, 163, 84, 0.4);
+    color: var(--color-gold);
+    background: transparent;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--transition-base), border-color var(--transition-base);
+    animation: dfc-hint-fade-in 0.2s ease;
+}
+
+.dfc-login-hint:hover {
+    background: rgba(201, 163, 84, 0.08);
+    border-color: var(--color-gold);
+}
+
+@keyframes dfc-hint-fade-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── DuffelBookingModal flight info block ────────────────────────────────── */
+.dbm-flight-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: var(--color-bg-subtle, rgba(255,255,255,0.03));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.dbm-info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+}
+
+.dbm-info-icon {
+    color: #4caf88;
+    flex-shrink: 0;
+}
+
+.dbm-info-lbl {
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.65rem;
+    min-width: 72px;
+}
+
+.dbm-info-val {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+}
+
+.dbm-ref {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+    opacity: 0.8;
+}
+
+.dbm-email-note {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--color-text-faint);
+    margin: 0.5rem 0 0;
+    text-align: center;
+}
+
+.dbm-email-warn {
+    color: var(--color-warning-muted);
+    background: rgba(255, 170, 0, 0.06);
+    border: 1px solid rgba(255, 170, 0, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+}
+
+.dfc-price-wrap {
+    text-align: right;
+}
+
+.dfc-price {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #4caf88;
+    line-height: 1;
+}
+
+.dfc-price-lbl {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    color: var(--color-text-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-top: 0.2rem;
+}
+
+.dfc-seats {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: var(--color-text-faint);
+    white-space: nowrap;
+}
+
+.dfc-seats--low {
+    color: var(--color-warning-muted);
+}
+
+.dfc-badge {
+    font-family: var(--font-body);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4caf88;
+    background: rgba(76, 175, 136, 0.1);
+    border: 1px solid rgba(76, 175, 136, 0.3);
+    border-radius: var(--radius-pill);
+    padding: 0.15rem 0.55rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .dfc {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+        padding: 1rem 1.25rem;
+    }
+
+    .dfc-route {
+        grid-column: 1 / -1;
+    }
+
+    .dfc-bottom-row {
+        align-items: flex-end;
+    }
+}
+
+@media (max-width: 600px) {
+    .dfc {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .dfc-route {
+        grid-column: 1;
+    }
+
+    .dfc-bottom-row {
+        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+    }
+
+    .dfc-price-wrap {
+        text-align: left;
+    }
+}
+
+/* ── AirportAutocomplete styles ──────────────────────────────────────────── */
+.aac-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+}
+
+.aac-input-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.aac-pin-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--color-text-ghost);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.aac-input {
+    padding-left: 2.1rem !important;
+    padding-right: 2rem !important;
+    width: 100%;
+}
+
+.aac-clear-btn {
+    position: absolute;
+    right: 0.6rem;
+    background: none;
+    border: none;
+    color: var(--color-text-ghost);
+    cursor: pointer;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+}
+
+.aac-clear-btn:hover {
+    color: var(--color-text-muted);
+}
+
+.aac-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--color-bg-menu);
+    border: 1px solid var(--color-border-gold);
+    border-radius: var(--radius-lg);
+    padding: 0.35rem;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.aac-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--color-text-faint);
+}
+
+.aac-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--transition-fast);
+}
+
+.aac-option:hover {
+    background: var(--color-bg-menu-hover);
+}
+
+.aac-iata {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.aac-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.aac-name {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aac-country {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    color: var(--color-text-faint);
+}
+
+.aac-subtype {
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-ghost);
+    flex-shrink: 0;
+}

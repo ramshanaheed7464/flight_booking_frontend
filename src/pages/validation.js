@@ -176,6 +176,37 @@ export function validatePrice(val) {
 
 export const PASSPORT_RE = /^[A-Z0-9]{6,12}$/i;
 
+// Country-specific passport number formats keyed by ISO alpha-2 code.
+export const PASSPORT_FORMATS = {
+    PK: { re: /^[A-Z]{2}\d{7}$/i,       example: 'AB1234567'  },
+    AF: { re: /^[A-Z]{2}\d{7}$/i,       example: 'AB1234567'  },
+    US: { re: /^[A-Z0-9]{9}$/i,         example: 'A12345678'  },
+    AU: { re: /^[A-Z]{1,2}\d{7}$/i,     example: 'PA1234567'  },
+    GB: { re: /^\d{9}$/,                example: '123456789'  },
+    CA: { re: /^[A-Z]{2}\d{6}$/i,       example: 'AB123456'   },
+    CN: { re: /^[EG]\d{8}$/i,           example: 'E12345678'  },
+    NL: { re: /^[A-Z0-9]{9}$/i,         example: 'AB1234567'  },
+    EG: { re: /^[A-Z]\d{8}$/i,          example: 'A12345678'  },
+    FR: { re: /^\d{2}[A-Z]{2}\d{5}$/i,  example: '12AB12345'  },
+    DE: { re: /^[A-Z0-9]{9}$/i,         example: 'CF1234567'  },
+    IN: { re: /^[A-Z]\d{7}[A-Z0-9]$/i,  example: 'A1234567B'  },
+    IR: { re: /^[A-Z0-9]{8,9}$/i,       example: 'A12345678'  },
+    IT: { re: /^[A-Z]{2}\d{7}$/i,       example: 'AA1234567'  },
+    JP: { re: /^[A-Z]{2}\d{7}$/i,       example: 'TM1234567'  },
+    JO: { re: /^[A-Z]\d{8}$/i,          example: 'A12345678'  },
+    KR: { re: /^[A-Z]\d{8}$/i,          example: 'M12345678'  },
+    MY: { re: /^[A-Z]\d{8}$/i,          example: 'A12345678'  },
+    SA: { re: /^[A-Z]\d{8}$/i,          example: 'A12345678'  },
+    ZA: { re: /^[A-Z]\d{8}$/i,          example: 'A12345678'  },
+    ES: { re: /^[A-Z0-9]{9}$/i,         example: 'ABC123456'  },
+    TR: { re: /^[A-Z]\d{8}$/i,          example: 'U12345678'  },
+    AE: { re: /^[A-Z0-9]{8,9}$/i,       example: 'A12345678'  },
+};
+
+export function getPassportHint(nationality) {
+    const code = NATIONALITY_TO_COUNTRY[nationality];
+    return code && PASSPORT_FORMATS[code] ? PASSPORT_FORMATS[code].example : null;
+}
 
 export function validateFullName(val) {
     if (!val?.trim()) return 'Full name is required.';
@@ -185,9 +216,31 @@ export function validateFullName(val) {
     return '';
 }
 
-export function validatePassportNumber(val) {
+export function validatePassportNumber(val, nationality = null) {
     if (!val?.trim()) return 'Passport number is required.';
-    if (!PASSPORT_RE.test(val.trim())) return 'Enter a valid passport number (6–12 letters/digits).';
+    const upper = val.trim().toUpperCase();
+    const code = NATIONALITY_TO_COUNTRY[nationality];
+    const fmt = code ? PASSPORT_FORMATS[code] : null;
+    if (fmt) {
+        if (!fmt.re.test(upper))
+            return `Invalid format for ${nationality} passport. Expected: ${fmt.example}`;
+        return '';
+    }
+    if (!PASSPORT_RE.test(upper)) return 'Enter a valid passport number (6–12 letters/digits).';
+    return '';
+}
+
+export function validatePassportExpiry(val, departureDate = null) {
+    if (!val) return 'Passport expiry date is required.';
+    const expiry = new Date(val);
+    if (isNaN(expiry.getTime())) return 'Enter a valid expiry date.';
+    const now = new Date();
+    if (expiry <= now) return 'Your passport has expired.';
+    const travelDate = departureDate ? new Date(departureDate) : now;
+    const sixMonths = new Date(travelDate);
+    sixMonths.setMonth(sixMonths.getMonth() + 6);
+    if (expiry < sixMonths)
+        return 'Passport must be valid for at least 6 months beyond your travel date.';
     return '';
 }
 
@@ -204,6 +257,14 @@ export function validateDateOfBirth(val) {
     if (isNaN(dob.getTime())) return 'Enter a valid date.';
     if (dob >= now) return 'Date of birth must be in the past.';
     if (age > 120) return 'Enter a valid date of birth.';
+    return '';
+}
+
+export function validateAdultDateOfBirth(val) {
+    const base = validateDateOfBirth(val);
+    if (base) return base;
+    const age = (new Date() - new Date(val)) / (1000 * 60 * 60 * 24 * 365.25);
+    if (age < 18) return 'All travelers must be at least 18 years old for adult fares.';
     return '';
 }
 
@@ -323,12 +384,18 @@ export function validateMealPreference(val) {
     return '';
 }
 
-export function validatePassenger(p) {
+export function validatePassenger(p, departureDate = null) {
     return runValidators({
         fullName: validateFullName(p.fullName),
-        passportNumber: validatePassportNumber(p.passportNumber),
+        ...(p.email !== undefined
+            ? { email: validateEmail(p.email) }
+            : {}),
+        passportNumber: validatePassportNumber(p.passportNumber, p.nationality),
+        ...(p.passportExpiry !== undefined
+            ? { passportExpiry: validatePassportExpiry(p.passportExpiry, departureDate) }
+            : {}),
         nationality: validateNationality(p.nationality),
-        dateOfBirth: validateDateOfBirth(p.dateOfBirth),
+        dateOfBirth: validateAdultDateOfBirth(p.dateOfBirth),
         gender: validateGender(p.gender),
         phone: validatePhone(p.phone, p.nationality),
     });

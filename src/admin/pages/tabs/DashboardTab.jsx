@@ -2,23 +2,14 @@ import { useEffect, useState } from 'react';
 import { Plane, BookOpen, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { getFlights } from '../../../api/flightApi';
 import { getAllBookings } from '../../../api/bookingApi';
+import StatCard from '../../../components/StatCard';
+import StatusBadge from '../../../components/StatusBadge';
 import './AdminTabs.css';
 
-function StatusBadge({ status }) {
-    const colors = {
-        BOOKED: 'var(--color-booked)',
-        CANCELLED: 'var(--color-cancelled)',
-        COMPLETED: 'var(--color-completed)',
-        RETURN: 'var(--color-return)',
-    };
-    const color = colors[status] || 'var(--color-gold)';
-    return (
-        <span className="ap-status" style={{ color, borderColor: color + '55', background: color + '11' }}>
-            {status}
-        </span>
-    );
-}
-
+/**
+ * DashboardTab — SRP: renders the admin overview stats and recent bookings table.
+ * StatCard and StatusBadge imported from shared components (DRY / DIP).
+ */
 export default function DashboardTab({ onNav }) {
     const [flights, setFlights] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -27,7 +18,7 @@ export default function DashboardTab({ onNav }) {
     useEffect(() => {
         Promise.all([getFlights(), getAllBookings()])
             .then(([fr, br]) => { setFlights(fr.data); setBookings(br.data); })
-            .catch(() => { })
+            .catch(() => {})
             .finally(() => setLoading(false));
     }, []);
 
@@ -49,9 +40,24 @@ export default function DashboardTab({ onNav }) {
             ) : (
                 <>
                     <div className="ap-stats">
-                        <StatCard iconClass="ap-stat-icon--gold" icon={<Plane size={20} />} num={flights.length} label="Flights" />
-                        <StatCard iconClass="ap-stat-icon--green" icon={<BookOpen size={20} />} num={bookings.length} label="Bookings" />
-                        <StatCard iconClass="ap-stat-icon--blue" icon={<CheckCircle size={20} />} num={bookings.filter(b => b.status === 'BOOKED').length} label="Active Bookings" />
+                        <StatCard
+                            iconClass="ap-stat-icon--gold"
+                            icon={<Plane size={20} />}
+                            num={flights.length}
+                            label="Flights"
+                        />
+                        <StatCard
+                            iconClass="ap-stat-icon--green"
+                            icon={<BookOpen size={20} />}
+                            num={bookings.length}
+                            label="Bookings"
+                        />
+                        <StatCard
+                            iconClass="ap-stat-icon--blue"
+                            icon={<CheckCircle size={20} />}
+                            num={bookings.filter(b => b.status === 'BOOKED').length}
+                            label="Active Bookings"
+                        />
                         <StatCard
                             iconClass="ap-stat-icon--revenue"
                             icon={<span className="ap-stat-icon-pkr">PKR</span>}
@@ -99,17 +105,5 @@ export default function DashboardTab({ onNav }) {
                 </>
             )}
         </>
-    );
-}
-
-function StatCard({ iconClass, icon, num, label }) {
-    return (
-        <div className="ap-stat-card">
-            <div className={`ap-stat-icon ${iconClass}`}>{icon}</div>
-            <div>
-                <div className="ap-stat-num">{num}</div>
-                <div className="ap-stat-lbl">{label}</div>
-            </div>
-        </div>
     );
 }

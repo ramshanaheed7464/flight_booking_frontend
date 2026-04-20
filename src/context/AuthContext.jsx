@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import keycloak from '../keycloak';
+import keycloak, { keycloakInitialized, setKeycloakInitialized } from '../keycloak';
 import axiosInstance from '../api/axiosInstance';
 
 export const AuthContext = createContext();
@@ -7,12 +7,11 @@ export const AuthContext = createContext();
 async function syncUserWithBackend() {
     try {
         const res = await axiosInstance.post('/user/sync');
-        if (res.status < 200 || res.status >= 300) {
-            console.error('Sync failed with status:', res.status);
-        }
+        return res.data ?? null;
     } catch (err) {
         console.error('User sync failed:', err);
     }
+    return null;
 }
 
 async function fetchUserProfile() {
@@ -30,34 +29,28 @@ export const AuthProvider = ({ children }) => {
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        if (keycloak.didInitialize) {
+        if (keycloakInitialized) {
             setInitialized(true);
             return;
         }
+        setKeycloakInitialized();
         keycloak
             .init({
                 onLoad: 'check-sso',
-                silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
                 checkLoginIframe: false,
             })
             .then(async (authenticated) => {
                 if (authenticated) {
                     try {
                         await keycloak.updateToken(30);
-                        console.log('Full token:', keycloak.token);
-                        console.log('Token parsed:', keycloak.tokenParsed);
                     } catch (e) {
                         console.error('Failed to refresh token:', e);
                     }
 
-                    console.log('Token available:', !!keycloak.token);
-                    await syncUserWithBackend();
-
-                    const dbUser = await fetchUserProfile();
-                    console.log('dbUser:', dbUser);
-                    console.log('dbUser role:', dbUser?.role);
-                    console.log('current path:', window.location.pathname);
-                    console.log('keycloak roles:', keycloak.tokenParsed?.realm_access?.roles);
+                    // sync writes the JWT name to DB; use its response if available,
+                    // otherwise fall back to a separate /user/me fetch
+                    const syncedUser = await syncUserWithBackend();
+                    const dbUser = syncedUser ?? await fetchUserProfile();
 
                     if (dbUser) {
                         setUser(dbUser);
@@ -82,6 +75,11 @@ export const AuthProvider = ({ children }) => {
             });
     }, []);
 
+    const loginWithGoogle = () => keycloak.login({
+        redirectUri: window.location.origin + '/flights',
+        idpHint: 'google'
+    });
+
     const login = () => keycloak.login({
         redirectUri: window.location.origin + '/flights'
     });
@@ -97,10 +95,10 @@ export const AuthProvider = ({ children }) => {
 
     const getToken = () => keycloak.token;
 
-    if (!initialized) return null;
+    const updateUser = (patch) => setUser(prev => prev ? { ...prev, ...patch } : prev);
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, getToken, initialized }}>
+        <AuthContext.Provider value={{ user, updateUser, login, loginWithGoogle, register, logout, getToken, initialized }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,8 +1,15 @@
-import { User, BookOpen, Globe, Phone, Utensils, Users, AlertCircle } from 'lucide-react';
-import { getPhonePlaceholder } from './validation';
+import { User, BookOpen, Globe, Phone, Utensils, Users, AlertCircle, Mail, Calendar } from 'lucide-react';
+import { getPhonePlaceholder, getPassportHint } from './validation';
 import CustomSelect from '../components/CustomSelect';
+import './PassengerForm.css';
 
-export default function PassengerForm({ index, data, onChange, errors, nationalities, mealPreferences }) {
+export default function PassengerForm({
+    index, data, onChange, errors,
+    nationalities, mealPreferences,
+    showPassportExpiry = false,
+    showEmail = false,
+    departureDate = null,
+}) {
 
     const toOptions = (list) =>
         list.map(o => {
@@ -44,6 +51,7 @@ export default function PassengerForm({ index, data, onChange, errors, nationali
                         value={data[key]}
                         onChange={e => onChange(index, key, e.target.value)}
                         style={type === 'date' ? { colorScheme: 'dark' } : {}}
+                        min={opts.min}
                     />
                     {errors?.[key] && (
                         <span className="modal-field-err">
@@ -55,6 +63,14 @@ export default function PassengerForm({ index, data, onChange, errors, nationali
         </div>
     );
 
+    const passportHint = getPassportHint(data.nationality) ?? 'e.g. AB1234567';
+
+    const minExpiry = (() => {
+        const base = departureDate ? new Date(departureDate) : new Date();
+        base.setMonth(base.getMonth() + 6);
+        return base.toISOString().slice(0, 10);
+    })();
+
     return (
         <div className="modal-passenger">
             <div className="modal-passenger-title">
@@ -63,10 +79,27 @@ export default function PassengerForm({ index, data, onChange, errors, nationali
                 <span className="modal-passenger-sub">Travel &amp; identity information</span>
             </div>
 
+            {showEmail && (
+                <>
+                    <div className="modal-passenger-section-label"><Mail size={10} /> Contact</div>
+                    <div className="modal-passenger-grid">
+                        {field('email', 'Email Address', 'email', {
+                            placeholder: 'ticket@example.com',
+                            fullWidth: true,
+                            icon: <Mail size={11} />,
+                        })}
+                    </div>
+                </>
+            )}
+
             <div className="modal-passenger-section-label"><BookOpen size={10} /> Identity</div>
             <div className="modal-passenger-grid">
                 {field('fullName', 'Full Name', 'text', { placeholder: 'As on passport', fullWidth: true, icon: <User size={11} /> })}
-                {field('passportNumber', 'Passport No.', 'text', { placeholder: 'e.g. AA1234567', icon: <BookOpen size={11} /> })}
+                {field('passportNumber', 'Passport No.', 'text', { placeholder: passportHint, icon: <BookOpen size={11} /> })}
+                {showPassportExpiry && field('passportExpiry', 'Passport Expiry', 'date', {
+                    icon: <Calendar size={11} />,
+                    min: minExpiry,
+                })}
                 {field('nationality', 'Nationality', 'select', { options: nationalities, icon: <Globe size={11} />, maxItems: 6 })}
                 {field('dateOfBirth', 'Date of Birth', 'date', { icon: <Users size={11} /> })}
                 {field('gender', 'Gender', 'select', { options: ['Male', 'Female', 'Other'], icon: <Users size={11} />, maxItems: 3 })}

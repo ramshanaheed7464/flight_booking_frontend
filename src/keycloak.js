@@ -8,4 +8,8 @@ const keycloakConfig = {
 
 const keycloak = new Keycloak(keycloakConfig);
 
+// Persists across AuthContext HMR reloads since this module stays stable
+export let keycloakInitialized = false;
+export const setKeycloakInitialized = () => { keycloakInitialized = true; };
+
 export default keycloak;

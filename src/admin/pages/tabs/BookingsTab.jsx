@@ -7,28 +7,16 @@ import {
 } from 'lucide-react';
 import { getAllBookings, updateBookingStatus, deleteBooking } from '../../../api/bookingApi';
 import { DeleteModal } from './AdminModals';
-
-const STATUS_COLOR = {
-    BOOKED: 'var(--color-booked)',
-    CANCELLED: 'var(--color-cancelled)',
-    COMPLETED: 'var(--color-completed)',
-    RETURN: 'var(--color-return)',
-};
+import StatCard from '../../../components/StatCard';
+import { STATUS_COLORS } from '../../../constants/statusColors';
+import { formatMediumDate, formatTime } from '../../../utils/dateFormat';
+import { parsePassengers } from '../../../utils/bookingUtils';
 
 const STATUSES = ['ALL', 'BOOKED', 'COMPLETED', 'CANCELLED'];
 
-const fmt = v => v ? new Date(v).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-const fmtT = v => v ? new Date(v).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
-
-function parsePassengers(raw) {
-    if (!raw) return [];
-    if (Array.isArray(raw)) return raw;
-    try {
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch { return []; }
-}
-
+/**
+ * PassengerExpansion — private sub-component; renders expanded passenger details row.
+ */
 function PassengerExpansion({ passengers }) {
     if (!passengers?.length) {
         return <div className="ap-pax-empty">No passenger details recorded.</div>;
@@ -41,13 +29,13 @@ function PassengerExpansion({ passengers }) {
                         <User size={11} /> Passenger {i + 1}
                     </div>
                     {[
-                        { icon: <User size={10} />, label: 'Full Name', val: p.fullName },
-                        { icon: null, label: 'Passport No.', val: p.passportNumber },
-                        { icon: <Globe size={10} />, label: 'Nationality', val: p.nationality },
-                        { icon: null, label: 'Date of Birth', val: p.dateOfBirth },
-                        { icon: null, label: 'Gender', val: p.gender },
-                        { icon: <Phone size={10} />, label: 'Phone', val: p.phone },
-                        { icon: <Utensils size={10} />, label: 'Meal', val: p.mealPreference },
+                        { icon: <User size={10} />,    label: 'Full Name',    val: p.fullName },
+                        { icon: null,                  label: 'Passport No.', val: p.passportNumber },
+                        { icon: <Globe size={10} />,   label: 'Nationality',  val: p.nationality },
+                        { icon: null,                  label: 'Date of Birth',val: p.dateOfBirth },
+                        { icon: null,                  label: 'Gender',       val: p.gender },
+                        { icon: <Phone size={10} />,   label: 'Phone',        val: p.phone },
+                        { icon: <Utensils size={10} />,label: 'Meal',         val: p.mealPreference },
                     ].map(({ icon, label, val }) => (
                         <div key={label}>
                             <div className="ap-pax-field-label">{icon}{label}</div>
@@ -62,6 +50,13 @@ function PassengerExpansion({ passengers }) {
     );
 }
 
+/**
+ * BookingsTab — SRP: admin CRUD for bookings.
+ * StatCard imported from shared components (DRY / DIP).
+ * Status colors from constants/statusColors.js (OCP).
+ * Date formatting delegated to utils/dateFormat.js.
+ * parsePassengers delegated to utils/bookingUtils.js.
+ */
 export default function BookingsTab() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -78,10 +73,14 @@ export default function BookingsTab() {
             .catch(e => {
                 const status = e.response?.status;
                 const msg = e.response?.data?.message || e.response?.data || e.message || 'Unknown error';
-                if (status === 401 || status === 403) setError(`Access denied (${status}) — make sure your account has ADMIN role.`);
-                else if (status === 404) setError('Endpoint not found (404) — check that GET /api/bookings/all exists on your backend.');
-                else if (!e.response) setError('Cannot reach server — is your backend running?');
-                else setError(`Failed to load bookings (${status ?? 'no response'}): ${msg}`);
+                if (status === 401 || status === 403)
+                    setError(`Access denied (${status}) — make sure your account has ADMIN role.`);
+                else if (status === 404)
+                    setError('Endpoint not found (404) — check that GET /api/bookings/all exists on your backend.');
+                else if (!e.response)
+                    setError('Cannot reach server — is your backend running?');
+                else
+                    setError(`Failed to load bookings (${status ?? 'no response'}): ${msg}`);
             })
             .finally(() => setLoading(false));
     };
@@ -135,10 +134,10 @@ export default function BookingsTab() {
             </div>
 
             <div className="ap-stats">
-                <StatCard icon={<BookOpen size={18} />} iconClass="ap-stat-icon--gold" num={counts.ALL} label="Total Bookings" />
-                <StatCard icon={<CheckCircle size={18} />} iconClass="ap-stat-icon--green" num={counts.BOOKED} label="Active" />
-                <StatCard icon={<XCircle size={18} />} iconClass="ap-stat-icon--danger" num={counts.CANCELLED} label="Cancelled" />
-                <StatCard icon={<Clock size={18} />} iconClass="ap-stat-icon--blue" num={counts.COMPLETED} label="Completed" />
+                <StatCard icon={<BookOpen size={18} />}    iconClass="ap-stat-icon--gold"   num={counts.ALL}       label="Total Bookings" />
+                <StatCard icon={<CheckCircle size={18} />} iconClass="ap-stat-icon--green"  num={counts.BOOKED}    label="Active" />
+                <StatCard icon={<XCircle size={18} />}     iconClass="ap-stat-icon--danger" num={counts.CANCELLED} label="Cancelled" />
+                <StatCard icon={<Clock size={18} />}       iconClass="ap-stat-icon--blue"   num={counts.COMPLETED} label="Completed" />
             </div>
 
             <div className="ap-action-bar">
@@ -183,9 +182,13 @@ export default function BookingsTab() {
                             ) : filtered.map(b => {
                                 const isExpanded = expandedId === b.id;
                                 const passengers = parsePassengers(b.passengerDetails);
+                                const statusColor = STATUS_COLORS[b.status] || 'var(--color-gold)';
                                 return (
                                     <React.Fragment key={b.id}>
-                                        <tr className="ap-table-row--clickable" onClick={() => setExpandedId(isExpanded ? null : b.id)}>
+                                        <tr
+                                            className="ap-table-row--clickable"
+                                            onClick={() => setExpandedId(isExpanded ? null : b.id)}
+                                        >
                                             <td><span className="ap-table-mono">#{b.id}</span></td>
                                             <td>
                                                 <div className="ap-user-cell">
@@ -203,21 +206,32 @@ export default function BookingsTab() {
                                             <td><span className="ap-table-mono">{b.flight?.flightNumber || '—'}</span></td>
                                             <td>
                                                 <div className="ap-date-cell">
-                                                    <div className="ap-table-mono ap-date-main">{fmt(b.flight?.departureTime)}</div>
-                                                    <div className="ap-date-time">{fmtT(b.flight?.departureTime)}</div>
+                                                    <div className="ap-table-mono ap-date-main">
+                                                        {formatMediumDate(b.flight?.departureTime)}
+                                                    </div>
+                                                    <div className="ap-date-time">
+                                                        {formatTime(b.flight?.departureTime)}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td><span className="ap-table-pax">{b.passengers ?? 1}</span></td>
-                                            <td><span className="ap-trip-type">{(b.tripType || 'ONE_WAY').replace('_', ' ').toLowerCase()}</span></td>
+                                            <td>
+                                                <span className="ap-trip-type">
+                                                    {(b.tripType || 'ONE_WAY').replace('_', ' ').toLowerCase()}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <select
                                                     className="ap-status-select"
                                                     value={b.status}
                                                     onClick={e => e.stopPropagation()}
-                                                    onChange={e => { e.stopPropagation(); handleStatusChange(b.id, e.target.value); }}
+                                                    onChange={e => {
+                                                        e.stopPropagation();
+                                                        handleStatusChange(b.id, e.target.value);
+                                                    }}
                                                     style={{
-                                                        color: STATUS_COLOR[b.status] || 'var(--color-gold)',
-                                                        borderColor: (STATUS_COLOR[b.status] || 'var(--color-gold)') + '55',
+                                                        color: statusColor,
+                                                        borderColor: `${statusColor}55`,
                                                     }}
                                                 >
                                                     <option value="BOOKED">BOOKED</option>
@@ -265,17 +279,5 @@ export default function BookingsTab() {
                 />
             )}
         </>
-    );
-}
-
-function StatCard({ icon, iconClass, num, label }) {
-    return (
-        <div className="ap-stat-card">
-            <div className={`ap-stat-icon ${iconClass}`}>{icon}</div>
-            <div>
-                <div className="ap-stat-num">{num}</div>
-                <div className="ap-stat-lbl">{label}</div>
-            </div>
-        </div>
     );
 }

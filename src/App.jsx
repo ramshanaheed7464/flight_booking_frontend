@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import Home from "./pages/Home";
 import Flights from "./pages/Flights";
 import Bookings from "./pages/Bookings";
@@ -37,6 +38,7 @@ function App() {
           <Route path="/bookings" element={<UserRoute><Bookings /></UserRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

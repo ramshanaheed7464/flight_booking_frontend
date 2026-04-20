@@ -1,41 +1,43 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Plane, X, Users, Wifi, WifiOff, Utensils, UtensilsCrossed,
     MonitorPlay, ShieldCheck, ShieldOff, Armchair, Luggage,
-    Clock, Layers
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import BookingModal from './BookingModal';
-import Footer from '../components/Footer';
+import { formatTime, formatLongDate, formatDuration } from '../utils/dateFormat';
+import './FlightDetailModal.css';
 
+/**
+ * FlightDetailModal — SRP: displays full flight details and gates into BookingModal.
+ * OCP: amenity list is data-driven; add a new amenity by extending the amenities array.
+ * Date/time formatting delegated to utils/dateFormat.js.
+ */
 export default function FlightDetailModal({ flight, allFlights, onClose, onBooked, nationalities }) {
     const [showBooking, setShowBooking] = useState(false);
-    const { user } = useContext(AuthContext);
-    const navigate = useNavigate();
+    const { user, login } = useContext(AuthContext);
 
     const toBool = v => v === true || v === 1 || v === '1' || String(v).toLowerCase() === 'true';
 
-    const wifiOn = toBool(flight.wifiAvailable);
-    const mealsOn = toBool(flight.mealsIncluded);
+    const wifiOn      = toBool(flight.wifiAvailable);
+    const mealsOn     = toBool(flight.mealsIncluded);
     const entertainOn = toBool(flight.entertainmentAvailable);
-    const refundOn = toBool(flight.refundable);
+    const refundOn    = toBool(flight.refundable);
 
     const flightMeals = mealsOn && flight.meals
         ? flight.meals.split(',').map(m => m.trim()).filter(Boolean)
         : [];
 
-    const fmt = v => v ? new Date(v).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
-    const fmtFull = v => v ? new Date(v).toLocaleDateString([], { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : '---';
-    const fmtDuration = mins => {
-        if (!mins) return null;
-        const h = Math.floor(mins / 60);
-        const m = mins % 60;
-        return h > 0 ? `${h}h ${m}m` : `${m}m`;
-    };
+    // OCP: extend this array to add new amenity toggles without changing rendering logic.
+    const amenities = [
+        { key: 'wifi',         on: wifiOn,      onIcon: <Wifi size={14} />,         offIcon: <WifiOff size={14} />,       label: 'Wi-Fi' },
+        { key: 'meals',        on: mealsOn,     onIcon: <Utensils size={14} />,     offIcon: <UtensilsCrossed size={14} />,label: 'Meals' },
+        { key: 'entertain',    on: entertainOn, onIcon: <MonitorPlay size={14} />,  offIcon: <MonitorPlay size={14} />,    label: 'Entertainment' },
+        { key: 'refundable',   on: refundOn,    onIcon: <ShieldCheck size={14} />,  offIcon: <ShieldOff size={14} />,      label: 'Refundable' },
+    ];
 
     const handleBook = () => {
-        if (!user) { onClose(); navigate('/login'); return; }
+        if (!user) { login(); return; }
         setShowBooking(true);
     };
 
@@ -49,6 +51,8 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
             mealPreferences={flightMeals}
         />
     );
+
+    const duration = formatDuration(flight.duration);
 
     return (
         <div className="fdm-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -65,8 +69,8 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                     <div className="fdm-route-hero">
                         <div className="fdm-city-block">
                             <div className="fdm-city-code">{flight.source}</div>
-                            <div className="fdm-city-time">{fmt(flight.departureTime)}</div>
-                            <div className="fdm-city-date">{fmtFull(flight.departureTime)}</div>
+                            <div className="fdm-city-time">{formatTime(flight.departureTime)}</div>
+                            <div className="fdm-city-date">{formatLongDate(flight.departureTime)}</div>
                         </div>
 
                         <div className="fdm-route-mid">
@@ -77,46 +81,29 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                                 <div className="fdm-route-dot" />
                             </div>
-                            {fmtDuration(flight.duration) && (
-                                <div className="fdm-duration-badge">{fmtDuration(flight.duration)}</div>
-                            )}
+                            {duration && <div className="fdm-duration-badge">{duration}</div>}
                         </div>
 
                         <div className="fdm-city-block fdm-city-right">
                             <div className="fdm-city-code">{flight.destination}</div>
-                            <div className="fdm-city-time">{fmt(flight.arrivalTime)}</div>
-                            <div className="fdm-city-date">{fmtFull(flight.arrivalTime)}</div>
+                            <div className="fdm-city-time">{formatTime(flight.arrivalTime)}</div>
+                            <div className="fdm-city-date">{formatLongDate(flight.arrivalTime)}</div>
                         </div>
                     </div>
                 </div>
 
                 {/* ── Body ── */}
                 <div className="fdm-body">
-
                     <div className="fdm-amenities">
-                        <div className={`fdm-amenity ${wifiOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {wifiOn ? <Wifi size={14} /> : <WifiOff size={14} />}
-                            <span>Wi-Fi</span>
-                        </div>
-
-                        <div className={`fdm-amenity ${mealsOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {mealsOn ? <Utensils size={14} /> : <UtensilsCrossed size={14} />}
-                            <span>Meals</span>
-                        </div>
-
-                        <div className={`fdm-amenity ${entertainOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            <MonitorPlay size={14} />
-                            <span>Entertainment</span>
-                        </div>
-
-                        <div className={`fdm-amenity ${refundOn ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
-                            {refundOn ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}
-                            <span>Refundable</span>
-                        </div>
+                        {amenities.map(({ key, on, onIcon, offIcon, label }) => (
+                            <div key={key} className={`fdm-amenity ${on ? 'fdm-amenity-on' : 'fdm-amenity-off'}`}>
+                                {on ? onIcon : offIcon}
+                                <span>{label}</span>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="fdm-grid">
-
                         {flight.seatType && (
                             <div className="fdm-detail-card">
                                 <div className="fdm-detail-icon"><Armchair size={13} /></div>
@@ -160,7 +147,6 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                                 </div>
                             </div>
                         )}
-
                     </div>
                 </div>
 
@@ -182,8 +168,8 @@ export default function FlightDetailModal({ flight, allFlights, onClose, onBooke
                         {flight.seatsAvailable === 0
                             ? <div className="fdm-sold-out">Sold Out</div>
                             : <button className="fdm-book-btn" onClick={handleBook}>
-                                <Plane size={14} /> Book Now
-                            </button>
+                                <Plane size={14} /> {user ? 'Book Now' : 'Sign in to Book'}
+                              </button>
                         }
                     </div>
                 </div>

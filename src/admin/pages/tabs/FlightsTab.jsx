@@ -6,10 +6,8 @@ import {
 } from 'lucide-react';
 import { getFlights, deleteFlight } from '../../../api/flightApi';
 import { FlightModal, DeleteModal } from './AdminModals';
-
-const fmt = v => v
-    ? new Date(v).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-    : '—';
+import StatCard from '../../../components/StatCard';
+import { formatDateTimeShort } from '../../../utils/dateFormat';
 
 function seatsClass(n) {
     if (n === 0) return 'ap-seats--soldout';
@@ -17,6 +15,11 @@ function seatsClass(n) {
     return 'ap-seats--ok';
 }
 
+/**
+ * FlightsTab — SRP: CRUD management for flights.
+ * StatCard imported from shared components (DRY / DIP).
+ * Date formatting delegated to utils/dateFormat.js.
+ */
 export default function FlightsTab() {
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -62,10 +65,10 @@ export default function FlightsTab() {
             </div>
 
             <div className="ap-stats">
-                <StatCard iconClass="ap-stat-icon--gold" icon={<Plane size={18} />} num={flights.length} label="Total Flights" />
-                <StatCard iconClass="ap-stat-icon--green" icon={<CheckCircle size={18} />} num={flights.filter(f => f.seatsAvailable > 0).length} label="Available" />
-                <StatCard iconClass="ap-stat-icon--danger" icon={<XCircle size={18} />} num={flights.filter(f => f.seatsAvailable === 0).length} label="Sold Out" />
-                <StatCard iconClass="ap-stat-icon--blue" icon={<Users size={18} />} num={flights.reduce((s, f) => s + (f.seatsAvailable || 0), 0)} label="Total Seats" />
+                <StatCard iconClass="ap-stat-icon--gold"   icon={<Plane size={18} />}       num={flights.length}                                              label="Total Flights" />
+                <StatCard iconClass="ap-stat-icon--green"  icon={<CheckCircle size={18} />}  num={flights.filter(f => f.seatsAvailable > 0).length}            label="Available" />
+                <StatCard iconClass="ap-stat-icon--danger" icon={<XCircle size={18} />}      num={flights.filter(f => f.seatsAvailable === 0).length}          label="Sold Out" />
+                <StatCard iconClass="ap-stat-icon--blue"   icon={<Users size={18} />}        num={flights.reduce((s, f) => s + (f.seatsAvailable || 0), 0)}   label="Total Seats" />
             </div>
 
             <div className="ap-action-bar">
@@ -112,8 +115,8 @@ export default function FlightsTab() {
                                             {f.destination}
                                         </div>
                                     </td>
-                                    <td><span className="ap-table-mono">{fmt(f.departureTime)}</span></td>
-                                    <td><span className="ap-table-mono">{fmt(f.arrivalTime)}</span></td>
+                                    <td><span className="ap-table-mono">{formatDateTimeShort(f.departureTime)}</span></td>
+                                    <td><span className="ap-table-mono">{formatDateTimeShort(f.arrivalTime)}</span></td>
                                     <td><span className={seatsClass(f.seatsAvailable)}>{f.seatsAvailable}</span></td>
                                     <td><span className="ap-table-price">PKR {f.price}</span></td>
                                     <td>
@@ -133,9 +136,9 @@ export default function FlightsTab() {
                 </div>
             )}
 
-            {showAdd && <FlightModal onClose={() => setShowAdd(false)} onSaved={load} />}
+            {showAdd    && <FlightModal onClose={() => setShowAdd(false)} onSaved={load} />}
             {editFlight && <FlightModal flight={editFlight} onClose={() => setEditFlight(null)} onSaved={load} />}
-            {deleteFlt && (
+            {deleteFlt  && (
                 <DeleteModal
                     label={`flight ${deleteFlt.flightNumber} (${deleteFlt.source} → ${deleteFlt.destination})`}
                     onClose={() => setDeleteFlt(null)}
@@ -143,17 +146,5 @@ export default function FlightsTab() {
                 />
             )}
         </>
-    );
-}
-
-function StatCard({ iconClass, icon, num, label }) {
-    return (
-        <div className="ap-stat-card">
-            <div className={`ap-stat-icon ${iconClass}`}>{icon}</div>
-            <div>
-                <div className="ap-stat-num">{num}</div>
-                <div className="ap-stat-lbl">{label}</div>
-            </div>
-        </div>
     );
 }
